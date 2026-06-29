@@ -1,17 +1,17 @@
 from fastapi import FastAPI
+from app.schemas.product import ProductCreate
 
-from app.api.v1.routes import router
-
-app = FastAPI(
-    title="PricePilot API",
-    version="1.0.0"
-)
-
-app.include_router(router)
+app = FastAPI()
 
 
 @app.get("/")
-def root():
+def home():
+    return {"message": "PricePilot API is running"}
+
+
+@app.post("/products")
+def create_product(product: ProductCreate):
     return {
-        "message": "Welcome to PricePilot API"
+        "message": "Product received successfully",
+        "data": product,
     }
