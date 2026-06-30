@@ -3,12 +3,15 @@ from sqlalchemy.orm import declarative_base, sessionmaker
 
 DATABASE_URL = "postgresql://postgres:Oiha123#@localhost:5432/pricepilot"
 
-engine = create_engine(DATABASE_URL)
+engine = create_engine(
+    DATABASE_URL,
+    echo=True
+)
 
 SessionLocal = sessionmaker(
     autocommit=False,
     autoflush=False,
-    bind=engine,
+    bind=engine
 )
 
 Base = declarative_base()
