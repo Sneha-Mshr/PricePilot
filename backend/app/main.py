@@ -1,17 +1,16 @@
 from fastapi import FastAPI
-from app.schemas.product import ProductCreate
+from sqlalchemy import text
+
+from app.core.database import engine
 
 app = FastAPI()
 
 
 @app.get("/")
 def home():
-    return {"message": "PricePilot API is running"}
+    with engine.connect() as connection:
+        connection.execute(text("SELECT 1"))
 
-
-@app.post("/products")
-def create_product(product: ProductCreate):
     return {
-        "message": "Product received successfully",
-        "data": product,
+        "message": "Database Connected Successfully!"
     }
