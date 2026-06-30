@@ -41,12 +41,24 @@ def add_product(
 def get_products(
     page: int = 1,
     limit: int = 10,
+    search: str = "",
+    sort: str = "id",
+    order: str = "asc",
+    brand: str = "",
+    min_price: float = 0,
+    max_price: float = 100000000,
     db: Session = Depends(get_db),
 ):
     return get_all_products(
-    db,
-    page,
-    limit,
+    db=db,
+    page=page,
+    limit=limit,
+    search=search,
+    sort=sort,
+    order=order,
+    brand=brand,
+    min_price=min_price,
+    max_price=max_price,
 )
 
 @router.get(

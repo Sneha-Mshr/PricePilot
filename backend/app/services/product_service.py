@@ -1,7 +1,6 @@
 from sqlalchemy.orm import Session
 
-from sqlalchemy import asc, desc
-
+from sqlalchemy import asc, desc, or_
 from app.models.product import Product
 from app.schemas.product import ProductCreate, ProductUpdate
 
@@ -26,11 +25,49 @@ def get_all_products(
     db: Session,
     page: int = 1,
     limit: int = 10,
+    search: str = "",
+    sort: str = "id",
+    order: str = "asc",
+    brand: str = "",
+    min_price: float = 0,
+    max_price: float = 100000000,
 ):
     offset = (page - 1) * limit
 
+    query = db.query(Product)
+
+    # Search
+    if search:
+        query = query.filter(
+            or_(
+                Product.title.ilike(f"%{search}%"),
+                Product.brand.ilike(f"%{search}%"),
+            )
+        )
+
+    # Brand Filter
+    if brand:
+        query = query.filter(
+            Product.brand.ilike(f"%{brand}%")
+        )
+
+    # Price Range
+    query = query.filter(
+        Product.price >= min_price,
+        Product.price <= max_price,
+    )
+
+    # Sorting
+    if hasattr(Product, sort):
+        column = getattr(Product, sort)
+
+        if order.lower() == "desc":
+            query = query.order_by(desc(column))
+        else:
+            query = query.order_by(asc(column))
+
     return (
-        db.query(Product)
+        query
         .offset(offset)
         .limit(limit)
         .all()
