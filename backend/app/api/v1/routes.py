@@ -39,9 +39,15 @@ def add_product(
     response_model=list[ProductResponse],
 )
 def get_products(
+    page: int = 1,
+    limit: int = 10,
     db: Session = Depends(get_db),
 ):
-    return get_all_products(db)
+    return get_all_products(
+    db,
+    page,
+    limit,
+)
 
 @router.get(
     "/products/{product_id}",

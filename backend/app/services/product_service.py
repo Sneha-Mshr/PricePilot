@@ -1,5 +1,7 @@
 from sqlalchemy.orm import Session
 
+from sqlalchemy import asc, desc
+
 from app.models.product import Product
 from app.schemas.product import ProductCreate, ProductUpdate
 
@@ -20,8 +22,19 @@ def create_product(db: Session, product: ProductCreate):
 
     return db_product
 
-def get_all_products(db: Session):
-    return db.query(Product).all()
+def get_all_products(
+    db: Session,
+    page: int = 1,
+    limit: int = 10,
+):
+    offset = (page - 1) * limit
+
+    return (
+        db.query(Product)
+        .offset(offset)
+        .limit(limit)
+        .all()
+    )
 
 def get_product_by_id(db: Session, product_id: int):
     return db.query(Product).filter(Product.id == product_id).first()
