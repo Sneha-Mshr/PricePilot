@@ -1,9 +1,20 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends
+from sqlalchemy.orm import Session
 
-from app.api.v1.health import router as health_router
+from app.core.database import get_db
+from app.schemas.product import ProductCreate, ProductResponse
+from app.services import create_product
 
-router = APIRouter(
-    prefix="/api/v1"
+router = APIRouter()
+
+
+@router.post(
+    "/products",
+    response_model=ProductResponse,
+    status_code=201,
 )
-
-router.include_router(health_router)
+def add_product(
+    product: ProductCreate,
+    db: Session = Depends(get_db),
+):
+    return create_product(db, product)

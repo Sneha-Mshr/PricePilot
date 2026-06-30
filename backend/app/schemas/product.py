@@ -1,14 +1,17 @@
-from pydantic import BaseModel, Field, HttpUrl
+from pydantic import BaseModel
 
 
 class ProductCreate(BaseModel):
-    title: str = Field(min_length=3, max_length=100)
-    price: float = Field(gt=0)
-    website: HttpUrl
-
-
-class ProductResponse(BaseModel):
-    id: int
     title: str
+    brand: str
     price: float
-    website: HttpUrl
+    currency: str
+    source: str
+    url: str
+
+
+class ProductResponse(ProductCreate):
+    id: int
+
+    class Config:
+        from_attributes = True

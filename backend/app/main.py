@@ -1,20 +1,21 @@
 from fastapi import FastAPI
-from sqlalchemy import text
 
-from app.core.database import engine, Base
-from app.models import Product
+from app.api.v1.routes import router
+from app.core.database import Base, engine
 
-app = FastAPI()
+app = FastAPI(title="PricePilot API")
 
-# Create database tables
 Base.metadata.create_all(bind=engine)
+
+app.include_router(
+    router,
+    prefix="/api/v1",
+    tags=["Products"],
+)
 
 
 @app.get("/")
 def home():
-    with engine.connect() as connection:
-        connection.execute(text("SELECT 1"))
-
     return {
-        "message": "Database Connected Successfully!"
+        "message": "PricePilot API Running Successfully!"
     }
