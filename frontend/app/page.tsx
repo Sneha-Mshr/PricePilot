@@ -1,8 +1,13 @@
+"use client";
+
 import Navbar from "@/components/layout/Navbar";
 import SearchBar from "@/components/common/SearchBar";
 import ProductCard from "@/components/product/ProductCard";
+import useProducts from "@/hooks/useProducts";
 
 export default function Home() {
+  const { products, loading, error } = useProducts();
+
   return (
     <>
       <Navbar />
@@ -15,12 +20,21 @@ export default function Home() {
           Trending Products
         </h2>
 
+        {loading && (
+          <p>Loading products...</p>
+        )}
+
+        {error && (
+          <p className="text-red-500">{error}</p>
+        )}
+
         <div className="grid gap-6 md:grid-cols-3">
-
-          <ProductCard />
-          <ProductCard />
-          <ProductCard />
-
+          {products.map((product) => (
+            <ProductCard
+              key={product.id}
+              product={product}
+            />
+          ))}
         </div>
 
       </main>
