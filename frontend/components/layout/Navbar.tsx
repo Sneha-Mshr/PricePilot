@@ -21,14 +21,14 @@ export default function Navbar() {
           </Link>
 
           <Link
-            href="/products"
+            href="/"
             className="font-medium text-gray-700 hover:text-blue-600 dark:text-gray-300"
           >
             Products
           </Link>
 
           <Link
-            href="#"
+            href="/"
             className="font-medium text-gray-700 hover:text-blue-600 dark:text-gray-300"
           >
             Analytics
