@@ -3,7 +3,7 @@ export interface Product {
   title: string;
   brand: string;
   price: number;
-  image_url?: string;
-  source?: string;
-  rating?: number;
+  currency: string;
+  source: string;
+  url: string;
 }
