@@ -10,15 +10,22 @@ export default function useProducts() {
   const [error, setError] = useState("");
 
   useEffect(() => {
-    async function fetchProducts() {
-      try {
+        async function fetchProducts() {
+    try {
         const data = await getProducts();
+
+        console.log("API Response:", data);
+
         setProducts(data);
-      } catch (err) {
-        setError("Failed to load products");
-      } finally {
+        } catch (err: any) {
+    console.error("API Error:", err);
+    console.error("Response:", err.response);
+    console.error("Response Data:", err.response?.data);
+
+    setError("Failed to load products");
+    } finally {
         setLoading(false);
-      }
+    }
     }
 
     fetchProducts();
