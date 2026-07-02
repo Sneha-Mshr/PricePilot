@@ -2,6 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.api.v1.routes import router
+from app.api.v2.routes import router as ai_router
 from app.core.database import Base, engine
 
 app = FastAPI(title="PricePilot API")
@@ -23,6 +24,11 @@ app.include_router(
     router,
     prefix="/api/v1",
     tags=["Products"],
+)
+app.include_router(
+    ai_router,
+    prefix="/api/v2",
+    tags=["AI Search"],
 )
 
 @app.get("/")
