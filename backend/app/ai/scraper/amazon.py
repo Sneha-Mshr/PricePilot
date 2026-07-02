@@ -1,4 +1,5 @@
 from urllib.parse import quote_plus
+
 from app.ai.scraper.base import BaseScraper
 from app.ai.parser.amazon_parser import AmazonParser
 
@@ -22,12 +23,15 @@ class AmazonScraper(BaseScraper):
 
             page.goto(url)
 
-            page.wait_for_timeout(5000)
+            page.wait_for_load_state("networkidle")
 
-            return {
-                "site": "amazon",
-                "url": url
-            }
+            parser = AmazonParser()
+
+            products = parser.parse(page)
+
+            print(products)
+
+            return products
 
         finally:
 
