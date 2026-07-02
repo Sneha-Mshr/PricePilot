@@ -7,7 +7,9 @@ class AmazonParser:
 
         products = []
 
-        cards = page.locator("div[data-component-type='s-search-result']")
+        cards = page.locator("[data-component-type='s-search-result']")
+
+        print("Total Cards Found:", cards.count())
 
         count = min(cards.count(), 5)
 
