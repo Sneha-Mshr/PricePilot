@@ -18,33 +18,30 @@ class AmazonParser:
             card = cards.nth(i)
 
             try:
-
-                title = card.locator("h2 span").inner_text()
-
+                title = card.locator("h2").inner_text()
             except:
                 title = ""
 
             try:
-
-                whole = card.locator("span.a-price-whole").first.inner_text()
-
-                fraction = card.locator("span.a-price-fraction").first.inner_text()
-
-                price = f"{whole}.{fraction}"
-
+                price = card.locator(".a-price-whole").first.inner_text()
             except:
-
                 price = ""
 
             try:
-
                 href = card.locator("h2 a").first.get_attribute("href")
 
-                url = "https://www.amazon.in" + href
+                if href:
+                    url = "https://www.amazon.in" + href
+                else:
+                    url = ""
 
             except:
-
                 url = ""
+
+            print("----------------------")
+            print("TITLE :", title)
+            print("PRICE :", price)
+            print("URL   :", url)
 
             products.append(
                 {
