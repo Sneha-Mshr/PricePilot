@@ -23,11 +23,13 @@ class AmazonScraper(BaseScraper):
 
             page.goto(url)
 
-            page.wait_for_load_state("networkidle")
+            page.wait_for_timeout(5000)
 
             parser = AmazonParser()
 
             products = parser.parse(page)
+            print(f"Extracted {len(products)} products")
+            print(products)
 
             print(products)
 
