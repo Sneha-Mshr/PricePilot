@@ -8,10 +8,10 @@ class SearchRequest(BaseModel):
 
 class ProductResult(BaseModel):
     title: str
-    price: float
-    currency: str
-    source: str
+    price: str
     url: str
+    currency: str = "INR"
+    source: str = "Amazon"
     image: str | None = None
 
 
