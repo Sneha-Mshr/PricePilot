@@ -1,28 +1,42 @@
-from app.ai.scraper.amazon import AmazonScraper
-from app.ai.agents.planner import SearchPlanner
-from app.schemas.search import SearchResponse
+from urllib.parse import quote_plus
+
+from app.ai.scraper.base import BaseScraper
+from app.ai.parser.amazon_parser import AmazonParser
 
 
-class SearchAgent:
+class AmazonScraper(BaseScraper):
 
-    def __init__(self):
-
-        self.planner = SearchPlanner()
-
-        self.amazon = AmazonScraper()
+    BASE_URL = "https://www.amazon.in/s"
 
     def search(self, query: str):
 
-        plan = self.planner.create_plan(query)
+        playwright = None
+        browser = None
 
-        print(plan)
+        try:
 
-        result = self.amazon.search(query)
+            playwright, browser, page = self.launch_browser()
 
-        print(result)
-        
-        return SearchResponse(
-            query=query,
-            total=0,
-            products=[]
-        )
+            url = f"{self.BASE_URL}?k={quote_plus(query)}"
+
+            print(url)
+
+            page.goto(url)
+
+            page.wait_for_load_state("networkidle")
+
+            parser = AmazonParser()
+
+            products = parser.parse(page)
+
+            print(products)
+
+            return products
+
+        finally:
+
+            if browser:
+                browser.close()
+
+            if playwright:
+                playwright.stop()

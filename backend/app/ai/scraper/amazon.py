@@ -1,5 +1,6 @@
 from urllib.parse import quote_plus
 from app.ai.scraper.base import BaseScraper
+from app.ai.parser.amazon_parser import AmazonParser
 
 
 class AmazonScraper(BaseScraper):
