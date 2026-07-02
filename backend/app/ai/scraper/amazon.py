@@ -12,6 +12,7 @@ class AmazonScraper(BaseScraper):
         browser = None
 
         try:
+
             playwright, browser, page = self.launch_browser()
 
             url = f"{self.BASE_URL}?k={quote_plus(query)}"
@@ -27,11 +28,8 @@ class AmazonScraper(BaseScraper):
                 "url": url
             }
 
-        except Exception as e:
-            print("Amazon Scraper Error:", e)
-            raise
-
         finally:
+
             if browser:
                 browser.close()
 
