@@ -42,5 +42,11 @@ public class AuthController {
         return fastApiService.health();
 
     }
+    @PostMapping("/search")
+    public String search(@RequestParam String query) {
+        
+        return fastApiService.search(query);
+
+    }
 
 }
