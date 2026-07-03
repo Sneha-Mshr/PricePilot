@@ -1,6 +1,7 @@
 package com.pricepilot.backend.controller;
 
 import com.pricepilot.backend.model.User;
+import com.pricepilot.backend.service.FastApiService;
 import com.pricepilot.backend.service.UserService;
 import org.springframework.web.bind.annotation.*;
 
@@ -9,14 +10,20 @@ import org.springframework.web.bind.annotation.*;
 public class AuthController {
 
     private final UserService service;
+    private final FastApiService fastApiService;
 
-    public AuthController(UserService service) {
+    public AuthController(UserService service,
+                          FastApiService fastApiService) {
+
         this.service = service;
+        this.fastApiService = fastApiService;
     }
 
     @PostMapping("/register")
     public User register(@RequestBody User user) {
+
         return service.register(user);
+
     }
 
     @PostMapping("/login")
@@ -26,5 +33,14 @@ public class AuthController {
                 user.getEmail(),
                 user.getPassword()
         );
+
     }
+
+    @GetMapping("/ai-health")
+    public String aiHealth() {
+
+        return fastApiService.health();
+
+    }
+
 }
