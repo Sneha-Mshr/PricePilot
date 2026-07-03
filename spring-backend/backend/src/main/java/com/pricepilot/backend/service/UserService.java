@@ -1,5 +1,8 @@
 package com.pricepilot.backend.service;
 
+import java.util.Optional;
+import com.pricepilot.backend.security.JwtUtil;
+
 import com.pricepilot.backend.model.User;
 import com.pricepilot.backend.repository.UserRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
