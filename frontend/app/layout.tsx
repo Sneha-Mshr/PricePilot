@@ -1,21 +1,25 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Poppins } from "next/font/google";
 import ThemeProvider from "@/components/providers/ThemeProvider";
 import "./globals.css";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const poppins = Poppins({
   subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
+  weight: ["300", "400", "500", "600", "700"],
 });
 
 export const metadata: Metadata = {
-  title: "PricePilot",
-  description: "AI Powered Price Comparison Platform",
+  title: "PricePilot | AI Price Comparison Platform",
+  description:
+    "Compare product prices across Amazon, Flipkart, Myntra and more with AI-powered search.",
+  keywords: [
+    "Price Comparison",
+    "AI Shopping",
+    "Amazon",
+    "Flipkart",
+    "Myntra",
+    "PricePilot",
+  ],
 };
 
 export default function RootLayout({
@@ -24,15 +28,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html
-      lang="en"
-      suppressHydrationWarning
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
-    >
-      <body className="min-h-full flex flex-col">
-        <ThemeProvider>
-          {children}
-        </ThemeProvider>
+    <html lang="en" suppressHydrationWarning>
+      <body
+        className={`${poppins.className} bg-slate-50 text-slate-900 dark:bg-slate-950 dark:text-white transition-colors duration-300`}
+      >
+        <ThemeProvider>{children}</ThemeProvider>
       </body>
     </html>
   );
