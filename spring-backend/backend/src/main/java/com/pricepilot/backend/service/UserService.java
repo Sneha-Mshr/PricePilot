@@ -32,4 +32,21 @@ public class UserService {
 
         return repository.save(user);
     }
+
+    public String login(String email, String password) {
+
+    Optional<User> optionalUser = repository.findByEmail(email);
+
+        if (optionalUser.isEmpty()) {
+            throw new RuntimeException("User not found");
+        }
+
+        User user = optionalUser.get();
+
+        if (!passwordEncoder.matches(password, user.getPassword())) {
+            throw new RuntimeException("Invalid password");
+        }
+
+    return JwtUtil.generateToken(user.getEmail());
+    }
 }
