@@ -1,10 +1,12 @@
 import api from "@/lib/api";
 
-export const getProducts = async () => {
+export const getProducts = async (query?: string) => {
   try {
     console.log("Calling API...");
 
-    const response = await api.get("/products");
+    const response = await api.get("/products", {
+      params: query ? { query } : {},
+    });
 
     console.log("Status:", response.status);
     console.log("Data:", response.data);
