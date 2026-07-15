@@ -36,7 +36,7 @@ export default function Home() {
                 AI Powered Shopping Assistant
               </div>
 
-              <h1 className="mx-auto max-w-5xl text-6xl font-extrabold leading-tight text-slate-900 dark:text-white">
+              <h1 className="mx-auto max-w-5xl text-4xl font-extrabold leading-tight text-slate-900 sm:text-5xl lg:text-6xl dark:text-white">
 
                 Compare Prices Across
 
@@ -48,7 +48,7 @@ export default function Home() {
 
               </h1>
 
-              <p className="mx-auto mt-8 max-w-3xl text-xl text-slate-600 dark:text-slate-400">
+              <p className="mx-auto mt-8 max-w-3xl px-2 text-base text-slate-600 sm:text-lg lg:text-xl dark:text-slate-400">
 
                 Search once and instantly compare prices from Amazon,
                 Flipkart, Myntra and many more using AI.
@@ -59,7 +59,7 @@ export default function Home() {
 
             {/* Search */}
 
-            <div className="mt-12 flex w-full max-w-4xl rounded-2xl bg-white p-3 shadow-2xl dark:bg-slate-900">
+            <div className="mt-12 flex w-full max-w-4xl flex-col gap-3 rounded-2xl bg-white p-3 shadow-2xl md:flex-row dark:bg-slate-900">
 
               <input
                 className="flex-1 rounded-xl bg-transparent px-5 py-4 text-lg outline-none"
@@ -97,7 +97,7 @@ export default function Home() {
 
             {/* Buttons */}
 
-            <div className="mt-10 flex gap-5">
+            <div className="mt-10 flex flex-col gap-4 sm:flex-row">
 
               <button className="flex items-center gap-2 rounded-xl bg-teal-500 px-8 py-4 font-semibold text-white hover:bg-teal-600">
 
@@ -234,7 +234,7 @@ export default function Home() {
 
     {!loading && !error && (
 
-      <div className="grid gap-10 md:grid-cols-2 lg:grid-cols-3">
+      <div className="grid grid-cols-1 gap-8 md:grid-cols-2 xl:grid-cols-3">
 
         {products.map((product) => (
 
