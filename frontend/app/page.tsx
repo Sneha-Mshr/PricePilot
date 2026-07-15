@@ -1,12 +1,12 @@
 "use client";
-import Features from "@/components/home/Features";
-import Categories from "@/components/home/Categories";
+import Features from "@/app/components/home/Features";
+import Categories from "@/app/components/home/Categories";
 import { motion } from "framer-motion";
 import { ArrowRight, Sparkles, ShieldCheck, Zap } from "lucide-react";
 
-import Navbar from "@/components/layout/Navbar";
-import ProductCard from "@/components/product/ProductCard";
-import Footer from "@/components/home/Footer";
+import Navbar from "@/app/components/layout/Navbar";
+import ProductCard from "@/app/components/product/ProductCard";
+import Footer from "@/app/components/home/Footer";
 import useProducts from "@/hooks/useProducts";
 
 export default function Home() {
@@ -175,34 +175,93 @@ export default function Home() {
 
         </section>
 
-        {/* PRODUCTS */}
+        {/* ---------------- TRENDING PRODUCTS ---------------- */}
 
-        <section className="mx-auto max-w-7xl px-6 pb-24">
+      <section className="bg-slate-950 py-24">
 
-          <h2 className="mb-10 text-4xl font-bold">
+        <div className="mx-auto max-w-7xl px-6">
 
-            Trending Products
+          <div className="mb-16 text-center">
 
-          </h2>
+            <span className="inline-flex items-center rounded-full bg-gradient-to-r from-teal-500 to-cyan-500 px-5 py-2 text-sm font-semibold text-white shadow-lg">
 
-          {loading && <p>Loading...</p>}
+              🔥 Most Popular Deals
 
-          {error && <p className="text-red-500">{error}</p>}
+            </span>
 
-          <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
+            <h2 className="mt-6 text-5xl font-extrabold text-white">
 
-            {products.map((product) => (
+              Trending Products
 
-              <ProductCard
-                key={product.id}
-                product={product}
-              />
+            </h2>
 
-            ))}
+            <p className="mx-auto mt-5 max-w-3xl text-lg text-slate-400">
+
+              Discover today's most popular products with AI-powered price
+              comparison across Amazon, Flipkart, Myntra, Ajio and more.
+
+            </p>
 
           </div>
 
-        </section>
+          {loading && (
+
+            <div className="py-16 text-center">
+
+              <p className="text-lg text-slate-400">
+
+                Loading Products...
+
+              </p>
+
+            </div>
+
+          )}
+
+          {error && (
+
+            <div className="py-16 text-center">
+
+              <p className="font-semibold text-red-500">
+
+                {error}
+
+              </p>
+
+            </div>
+
+          )}
+
+    {!loading && !error && (
+
+      <div className="grid gap-10 md:grid-cols-2 lg:grid-cols-3">
+
+        {products.map((product) => (
+
+          <ProductCard
+            key={product.id}
+            product={product}
+          />
+
+        ))}
+
+      </div>
+
+    )}
+
+    <div className="mt-16 flex justify-center">
+
+      <button className="rounded-xl bg-gradient-to-r from-teal-500 to-cyan-500 px-10 py-4 text-lg font-semibold text-white shadow-xl transition duration-300 hover:scale-105">
+
+        Explore More Products →
+
+      </button>
+
+    </div>
+
+  </div>
+
+</section>
 
         <Footer />
 

@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { Search, Sparkles } from "lucide-react";
-import ThemeToggle from "@/components/common/ThemeToggle";
+import ThemeToggle from "@/app/components/common/ThemeToggle";
 
 export default function Navbar() {
   return (
