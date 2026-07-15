@@ -1,9 +1,21 @@
 import api from "@/lib/api";
 
 export const getProducts = async () => {
-  const response = await api.get("/products");
+  try {
+    console.log("Calling API...");
 
-  console.log("Axios Response:", response);
+    const response = await api.get("/products");
 
-  return response.data;
+    console.log("Status:", response.status);
+    console.log("Data:", response.data);
+
+    return response.data;
+  } catch (error: any) {
+    console.log("Full Error:", error);
+    console.log("Error Message:", error.message);
+    console.log("Error Code:", error.code);
+    console.log("Error Config:", error.config);
+
+    throw error;
+  }
 };
