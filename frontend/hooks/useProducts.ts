@@ -9,25 +9,28 @@ export default function useProducts() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
-  useEffect(() => {
-        async function fetchProducts() {
+  const fetchProducts = async (query?: string) => {
     try {
-        const data = await getProducts();
+      setLoading(true);
 
-        console.log("API Response:", data);
+      const data = await getProducts(query);
 
-        setProducts(data);
-        } catch (err: any) {
-    console.error("API Error:", err);
-    console.error("Response:", err.response);
-    console.error("Response Data:", err.response?.data);
+      console.log("API Response:", data);
 
-    setError("Failed to load products");
+      setProducts(data);
+      setError("");
+    } catch (err: any) {
+      console.error("API Error:", err);
+      console.error("Response:", err.response);
+      console.error("Response Data:", err.response?.data);
+
+      setError("Failed to load products");
     } finally {
-        setLoading(false);
+      setLoading(false);
     }
-    }
+  };
 
+  useEffect(() => {
     fetchProducts();
   }, []);
 
@@ -35,5 +38,6 @@ export default function useProducts() {
     products,
     loading,
     error,
+    fetchProducts,
   };
 }
