@@ -1,4 +1,6 @@
 "use client";
+
+import { useState } from "react";
 import Features from "@/app/components/home/Features";
 import Categories from "@/app/components/home/Categories";
 import { motion } from "framer-motion";
@@ -10,7 +12,13 @@ import Footer from "@/app/components/home/Footer";
 import useProducts from "@/hooks/useProducts";
 
 export default function Home() {
-  const { products, loading, error } = useProducts();
+    const { products, loading, error, fetchProducts } = useProducts();
+
+    const [query, setQuery] = useState("");
+
+    const handleSearch = () => {
+      fetchProducts(query);
+    };
 
   return (
     <>
@@ -61,16 +69,24 @@ export default function Home() {
 
             <div className="mt-12 flex w-full max-w-4xl flex-col gap-3 rounded-2xl bg-white p-3 shadow-2xl md:flex-row dark:bg-slate-900">
 
-              <input
-                className="flex-1 rounded-xl bg-transparent px-5 py-4 text-lg outline-none"
-                placeholder="Search iPhone 16, Nike Shoes, MacBook..."
-              />
+            <input
+              className="flex-1 rounded-xl bg-transparent px-5 py-4 text-lg outline-none"
+              placeholder="Search iPhone 16, Nike Shoes, MacBook..."
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  handleSearch();
+                }
+              }}
+            />
 
-              <button className="rounded-xl bg-gradient-to-r from-teal-500 to-cyan-500 px-8 font-semibold text-white transition hover:scale-105">
-
-                Search
-
-              </button>
+            <button
+              onClick={handleSearch}
+              className="rounded-xl bg-gradient-to-r from-teal-500 to-cyan-500 px-8 font-semibold text-white transition hover:scale-105"
+            >
+              Search
+            </button>
 
             </div>
 

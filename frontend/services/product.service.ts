@@ -21,3 +21,12 @@ export const getProducts = async (query?: string) => {
     throw error;
   }
 };
+export const getProductById = async (id: string) => {
+  try {
+    const response = await api.get(`/products/${id}`);
+    return response.data;
+  } catch (error: any) {
+    console.error(error);
+    throw error;
+  }
+};

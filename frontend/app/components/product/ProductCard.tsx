@@ -8,6 +8,8 @@ import {
   Heart,
   Star,
 } from "lucide-react";
+
+import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { Product } from "@/types/product";
 
@@ -16,6 +18,12 @@ interface ProductCardProps {
 }
 
 export default function ProductCard({ product }: ProductCardProps) {
+    const router = useRouter();
+
+    const handleCardClick = () => {
+      router.push(`/products/${product.id}`);
+    };
+
   return (
     <motion.div
       whileHover={{
@@ -23,6 +31,8 @@ export default function ProductCard({ product }: ProductCardProps) {
         scale: 1.02,
       }}
       transition={{ duration: 0.25 }}
+      onClick={handleCardClick}
+      className="cursor-pointer"
     >
       <Card className="group overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-lg transition-all duration-300 hover:shadow-[0_20px_60px_rgba(20,184,166,0.25)] dark:border-slate-800 dark:bg-slate-900">
 
