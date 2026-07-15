@@ -1,5 +1,6 @@
 "use client";
-
+import Features from "@/components/home/Features";
+import Categories from "@/components/home/Categories";
 import { motion } from "framer-motion";
 import { ArrowRight, Sparkles, ShieldCheck, Zap } from "lucide-react";
 
@@ -116,10 +117,15 @@ export default function Home() {
 
           </div>
 
+       
         </section>
+        
+         <Categories />
+
+         <Features />
 
         {/* FEATURES */}
-
+         
         <section className="mx-auto grid max-w-7xl grid-cols-1 gap-8 px-6 py-20 md:grid-cols-3">
 
           {[

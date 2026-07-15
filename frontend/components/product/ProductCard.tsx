@@ -18,39 +18,60 @@ interface ProductCardProps {
 export default function ProductCard({ product }: ProductCardProps) {
   return (
     <motion.div
-      whileHover={{ y: -8 }}
+      whileHover={{
+        y: -10,
+        scale: 1.02,
+      }}
       transition={{ duration: 0.25 }}
     >
-      <Card className="group overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-md transition-all duration-300 hover:shadow-2xl dark:border-slate-800 dark:bg-slate-900">
+      <Card className="group overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-lg transition-all duration-300 hover:shadow-[0_20px_60px_rgba(20,184,166,0.25)] dark:border-slate-800 dark:bg-slate-900">
 
-        {/* Image */}
+        {/* Product Image */}
 
-        <div className="relative">
+        <div className="relative overflow-hidden">
 
-          <div className="flex h-60 items-center justify-center bg-gradient-to-br from-slate-100 to-slate-200 dark:from-slate-800 dark:to-slate-900">
+          <div className="flex h-64 items-center justify-center bg-gradient-to-br from-cyan-50 via-white to-teal-100 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900">
 
-            <span className="text-slate-400">
-              Product Image
-            </span>
+            <img
+              src="https://placehold.co/500x500/png?text=PricePilot"
+              alt={product.title}
+              className="h-full w-full object-cover transition duration-500 group-hover:scale-110"
+            />
 
           </div>
 
+          {/* Store Badge */}
+
+          <span className="absolute left-4 top-4 rounded-full bg-gradient-to-r from-teal-500 to-cyan-500 px-4 py-1 text-xs font-bold text-white shadow-lg">
+
+            {product.source}
+
+          </span>
+
           {/* Wishlist */}
 
-          <button className="absolute right-4 top-4 rounded-full bg-white p-2 shadow transition hover:scale-110 dark:bg-slate-900">
+          <button className="absolute right-4 top-4 rounded-full bg-white/90 p-2 shadow-lg backdrop-blur transition hover:scale-110 dark:bg-slate-800">
 
             <Heart
               size={18}
-              className="text-slate-500 hover:text-red-500"
+              className="text-slate-500 transition hover:text-red-500"
             />
 
           </button>
 
-          {/* Store */}
+          {/* Trending */}
 
-          <span className="absolute left-4 top-4 rounded-full bg-teal-500 px-3 py-1 text-xs font-semibold text-white">
+          <span className="absolute bottom-4 left-4 rounded-full bg-orange-500 px-3 py-1 text-xs font-bold text-white shadow">
 
-            {product.source}
+            🔥 Trending
+
+          </span>
+
+          {/* Discount */}
+
+          <span className="absolute bottom-4 right-4 rounded-full bg-green-500 px-3 py-1 text-xs font-bold text-white shadow">
+
+            15% OFF
 
           </span>
 
@@ -58,21 +79,21 @@ export default function ProductCard({ product }: ProductCardProps) {
 
         <CardContent className="space-y-5 p-6">
 
-          <div>
+          {/* Brand */}
 
-            <h2 className="line-clamp-2 text-xl font-bold text-slate-900 dark:text-white">
+          <span className="inline-block rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-700 dark:bg-slate-800 dark:text-slate-300">
 
-              {product.title}
+            {product.brand}
 
-            </h2>
+          </span>
 
-            <p className="mt-2 text-sm text-slate-500">
+          {/* Title */}
 
-              {product.brand}
+          <h2 className="line-clamp-2 text-xl font-bold text-slate-900 dark:text-white">
 
-            </p>
+            {product.title}
 
-          </div>
+          </h2>
 
           {/* Rating */}
 
@@ -83,15 +104,15 @@ export default function ProductCard({ product }: ProductCardProps) {
               size={16}
             />
 
-            <span className="text-sm font-medium">
+            <span className="font-semibold">
 
               4.8
 
             </span>
 
-            <span className="text-xs text-slate-500">
+            <span className="text-sm text-slate-500">
 
-              (1.2k reviews)
+              (1.2k Reviews)
 
             </span>
 
@@ -102,7 +123,7 @@ export default function ProductCard({ product }: ProductCardProps) {
           <div className="flex items-center">
 
             <IndianRupee
-              size={22}
+              size={24}
               className="text-teal-600"
             />
 
@@ -114,9 +135,9 @@ export default function ProductCard({ product }: ProductCardProps) {
 
           </div>
 
-          {/* Buttons */}
+          {/* Bottom */}
 
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between border-t border-slate-200 pt-4 dark:border-slate-700">
 
             <span className="flex items-center gap-2 text-sm text-slate-500">
 
@@ -130,10 +151,10 @@ export default function ProductCard({ product }: ProductCardProps) {
               href={product.url}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center gap-2 rounded-xl bg-gradient-to-r from-teal-500 to-cyan-500 px-4 py-2 text-sm font-semibold text-white transition hover:scale-105"
+              className="flex items-center gap-2 rounded-xl bg-gradient-to-r from-teal-500 to-cyan-500 px-5 py-2 font-semibold text-white transition duration-300 hover:scale-105"
             >
 
-              Visit
+              Compare Price
 
               <ExternalLink size={16} />
 
