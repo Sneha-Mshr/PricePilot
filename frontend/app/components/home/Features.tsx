@@ -45,19 +45,19 @@ const features = [
 
 export default function Features() {
   return (
-    <section className="bg-slate-950 py-24">
+    <section className="bg-white py-24 dark:bg-slate-950">
       <div className="mx-auto max-w-7xl px-6">
 
         <div className="text-center">
-          <p className="font-semibold uppercase tracking-widest text-teal-400">
+          <p className="font-semibold uppercase tracking-widest text-teal-500 dark:text-teal-400">
             Why PricePilot
           </p>
 
-          <h2 className="mt-4 text-5xl font-bold text-white">
+          <h2 className="mt-4 text-5xl font-bold text-slate-900 dark:text-white">
             Built For Smart Shopping
           </h2>
 
-          <p className="mx-auto mt-5 max-w-3xl text-lg text-slate-400">
+          <p className="mx-auto mt-5 max-w-3xl text-lg text-slate-600 dark:text-slate-400">
             PricePilot combines AI, modern backend technologies and
             intelligent search to help you discover the best deals across
             multiple online stores.
@@ -77,17 +77,17 @@ export default function Features() {
                   scale: 1.03,
                 }}
                 transition={{ duration: 0.2 }}
-                className="rounded-3xl border border-slate-800 bg-slate-900 p-8 shadow-xl hover:border-teal-500"
+                className="rounded-3xl border border-slate-200 bg-slate-50 p-8 shadow-xl hover:border-teal-500 dark:border-slate-800 dark:bg-slate-900"
               >
                 <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-r from-teal-500 to-cyan-500">
                   <Icon className="h-8 w-8 text-white" />
                 </div>
 
-                <h3 className="mt-6 text-2xl font-bold text-white">
+                <h3 className="mt-6 text-2xl font-bold text-slate-900 dark:text-white">
                   {item.title}
                 </h3>
 
-                <p className="mt-4 text-slate-400">
+                <p className="mt-4 text-slate-500 dark:text-slate-400">
                   {item.desc}
                 </p>
               </motion.div>

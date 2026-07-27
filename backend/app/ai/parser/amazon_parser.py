@@ -9,9 +9,9 @@ class AmazonParser:
 
         cards = page.locator("[data-component-type='s-search-result']")
 
-        print("Total Cards Found:", cards.count())
+        print("Amazon: Total Cards Found:", cards.count())
 
-        count = min(cards.count(), 5)
+        count = min(cards.count(), 8)
 
         for i in range(count):
 
@@ -24,6 +24,7 @@ class AmazonParser:
 
             try:
                 price = card.locator(".a-price-whole").first.inner_text()
+                price = price.replace(",", "").replace(".", "").strip()
             except:
                 price = ""
 
@@ -38,16 +39,29 @@ class AmazonParser:
             except:
                 url = ""
 
-            print("----------------------")
-            print("TITLE :", title)
-            print("PRICE :", price)
-            print("URL   :", url)
+            try:
+                img_el = card.locator("img.s-image").first
+                image = img_el.get_attribute("src") or ""
+            except:
+                image = ""
+
+            try:
+                rating_el = card.locator("span.a-icon-alt").first
+                rating = rating_el.inner_text().split(" ")[0] if rating_el.count() > 0 else ""
+            except:
+                rating = ""
+
+            if not title:
+                continue
 
             products.append(
                 {
                     "title": title,
                     "price": price,
                     "url": url,
+                    "image": image,
+                    "rating": rating,
+                    "source": "Amazon",
                 }
             )
 
