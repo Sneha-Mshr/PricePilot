@@ -13,7 +13,10 @@ import SearchResults from "@/app/components/search/SearchResults";
 import SearchLoading from "@/app/components/search/SearchLoading";
 import SearchEmpty from "@/app/components/search/SearchEmpty";
 import SearchSuggestions from "@/app/components/search/SearchSuggestions";
+import PriceDropToast from "@/app/components/alerts/PriceDropToast";
 import useSearch from "@/hooks/useSearch";
+import { checkPriceDrops, PriceDropMatch } from "@/services/alerts.service";
+import { getToken } from "@/services/auth.service";
 
 export default function Home() {
   const { results, loading: searchLoading, error: searchError, searched, search, clearResults } = useSearch();
@@ -21,6 +24,7 @@ export default function Home() {
 
   const [query, setQuery] = useState("");
   const [showSuggestions, setShowSuggestions] = useState(false);
+  const [priceDrops, setPriceDrops] = useState<PriceDropMatch[]>([]);
 
   // Auto-search from shared URL (?q=...)
   useEffect(() => {
@@ -30,6 +34,14 @@ export default function Home() {
       search(q);
     }
   }, [searchParams]);
+
+  // Check for price drops when results come in
+  useEffect(() => {
+    if (results && results.products.length > 0 && getToken()) {
+      const drops = checkPriceDrops(results.products);
+      setPriceDrops(drops);
+    }
+  }, [results]);
 
   const handleSearch = () => {
     if (query.trim()) {
@@ -41,6 +53,7 @@ export default function Home() {
   const handleClear = () => {
     setQuery("");
     clearResults();
+    setPriceDrops([]);
     // Remove ?q= from URL
     window.history.replaceState(null, "", "/");
   };
@@ -65,7 +78,7 @@ export default function Home() {
 
         {/* ---------------- HERO ---------------- */}
 
-        <section className="relative overflow-hidden">
+        <section className="relative">
 
           <div className="absolute inset-0 bg-gradient-to-br from-cyan-100 via-teal-50 to-white dark:from-slate-900 dark:via-slate-950 dark:to-slate-900" />
 
@@ -166,6 +179,16 @@ export default function Home() {
         {/* ---------------- SEARCH RESULTS ---------------- */}
 
         {searchLoading && <SearchLoading />}
+
+        {/* Price Drop Alert Toast */}
+        {searched && !searchLoading && priceDrops.length > 0 && (
+          <div className="mx-auto max-w-7xl px-6 pt-8">
+            <PriceDropToast
+              drops={priceDrops}
+              onDismiss={() => setPriceDrops([])}
+            />
+          </div>
+        )}
 
         {searched && !searchLoading && results && results.total > 0 && (
           <SearchResults data={results} />

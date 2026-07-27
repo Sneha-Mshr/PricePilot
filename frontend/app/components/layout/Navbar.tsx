@@ -1,8 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { motion } from "framer-motion";
-import { Search, Sparkles, LogOut, Heart, History, ChevronDown } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import { Search, Sparkles, LogOut, Heart, History, ChevronDown, Menu, X } from "lucide-react";
 import { useState, useRef, useEffect } from "react";
 import ThemeToggle from "@/app/components/common/ThemeToggle";
 import { useAuth } from "@/context/AuthContext";
@@ -10,6 +10,7 @@ import { useAuth } from "@/context/AuthContext";
 export default function Navbar() {
   const { user, isAuthenticated, logout } = useAuth();
   const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   // Close dropdown on outside click
@@ -58,7 +59,7 @@ export default function Navbar() {
           </div>
         </Link>
 
-        {/* Navigation */}
+        {/* Desktop Navigation */}
         <div className="hidden items-center gap-8 lg:flex">
           <Link
             href="/"
@@ -83,7 +84,7 @@ export default function Navbar() {
         </div>
 
         {/* Right Side */}
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-3">
 
           <ThemeToggle />
 
@@ -164,15 +165,79 @@ export default function Navbar() {
 
               <Link
                 href="/signup"
-                className="flex items-center gap-2 rounded-xl bg-gradient-to-r from-teal-500 to-cyan-500 px-5 py-2.5 text-sm font-semibold text-white shadow-lg shadow-cyan-500/30 transition hover:scale-105"
+                className="hidden items-center gap-2 rounded-xl bg-gradient-to-r from-teal-500 to-cyan-500 px-5 py-2.5 text-sm font-semibold text-white shadow-lg shadow-cyan-500/30 transition hover:scale-105 sm:flex"
               >
                 <Sparkles size={16} />
                 Get Started
               </Link>
             </>
           )}
+
+          {/* Mobile Menu Toggle */}
+          <button
+            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            className="flex h-10 w-10 items-center justify-center rounded-xl border border-slate-200 text-slate-600 transition hover:bg-slate-100 dark:border-slate-700 dark:text-slate-300 lg:hidden"
+          >
+            {mobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
+          </button>
         </div>
       </div>
+
+      {/* Mobile Menu */}
+      <AnimatePresence>
+        {mobileMenuOpen && (
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: "auto" }}
+            exit={{ opacity: 0, height: 0 }}
+            transition={{ duration: 0.2 }}
+            className="overflow-hidden border-t border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-950 lg:hidden"
+          >
+            <div className="space-y-1 px-6 py-4">
+              <Link
+                href="/"
+                onClick={() => setMobileMenuOpen(false)}
+                className="block rounded-xl px-4 py-3 font-medium text-slate-700 transition hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-800"
+              >
+                Home
+              </Link>
+              <Link
+                href="/wishlist"
+                onClick={() => setMobileMenuOpen(false)}
+                className="block rounded-xl px-4 py-3 font-medium text-slate-700 transition hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-800"
+              >
+                Wishlist
+              </Link>
+              <Link
+                href="/history"
+                onClick={() => setMobileMenuOpen(false)}
+                className="block rounded-xl px-4 py-3 font-medium text-slate-700 transition hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-800"
+              >
+                History
+              </Link>
+
+              {!isAuthenticated && (
+                <div className="flex gap-3 border-t border-slate-100 pt-4 dark:border-slate-800">
+                  <Link
+                    href="/login"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="flex-1 rounded-xl border border-slate-200 px-4 py-3 text-center font-semibold text-slate-700 dark:border-slate-700 dark:text-slate-300"
+                  >
+                    Login
+                  </Link>
+                  <Link
+                    href="/signup"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="flex-1 rounded-xl bg-gradient-to-r from-teal-500 to-cyan-500 px-4 py-3 text-center font-semibold text-white"
+                  >
+                    Sign Up
+                  </Link>
+                </div>
+              )}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </motion.header>
   );
 }

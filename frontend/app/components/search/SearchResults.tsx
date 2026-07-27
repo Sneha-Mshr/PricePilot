@@ -14,12 +14,12 @@ import {
   Heart,
   Share2,
   Check,
-  Bell,
 } from "lucide-react";
 import { SearchResponse, ProductResult } from "@/types/search";
 import { useAuth } from "@/context/AuthContext";
 import { addToWishlist, isInWishlist } from "@/services/wishlist.service";
-import { addPriceAlert, hasPriceAlert } from "@/services/alerts.service";
+import ProductModal from "@/app/components/search/ProductModal";
+import BestDealBanner from "@/app/components/search/BestDealBanner";
 
 interface SearchResultsProps {
   data: SearchResponse;
@@ -44,6 +44,7 @@ export default function SearchResults({ data }: SearchResultsProps) {
   const [activeSource, setActiveSource] = useState<string>("All");
   const [viewMode, setViewMode] = useState<ViewMode>("grid");
   const [sortMode, setSortMode] = useState<SortMode>("price_asc");
+  const [selectedProduct, setSelectedProduct] = useState<ProductResult | null>(null);
   const { isAuthenticated } = useAuth();
 
   const getFilteredProducts = (): ProductResult[] => {
@@ -89,6 +90,9 @@ export default function SearchResults({ data }: SearchResultsProps) {
 
   return (
     <section className="mx-auto max-w-7xl px-6 py-12">
+      {/* Best Deal Banner */}
+      <BestDealBanner data={data} />
+
       {/* Header */}
       <div className="mb-8 text-center">
         <h2 className="text-3xl font-extrabold text-slate-900 dark:text-white">
@@ -100,7 +104,7 @@ export default function SearchResults({ data }: SearchResultsProps) {
           </p>
           <button
             onClick={handleShare}
-            className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-medium transition ${
+            className={`inline-flex cursor-pointer items-center gap-1.5 rounded-full px-3 py-1 text-xs font-medium transition ${
               copied
                 ? "bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300"
                 : "bg-slate-100 text-slate-600 hover:bg-teal-100 hover:text-teal-700 dark:bg-slate-800 dark:text-slate-400"
@@ -212,7 +216,7 @@ export default function SearchResults({ data }: SearchResultsProps) {
             className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
           >
             {filteredProducts.map((product, index) => (
-              <ProductCard key={`${product.source}-${index}`} product={product} index={index} isAuthenticated={isAuthenticated} />
+              <ProductCard key={`${product.source}-${index}`} product={product} index={index} isAuthenticated={isAuthenticated} onClick={() => setSelectedProduct(product)} />
             ))}
           </motion.div>
         ) : (
@@ -224,7 +228,7 @@ export default function SearchResults({ data }: SearchResultsProps) {
             className="space-y-4"
           >
             {filteredProducts.map((product, index) => (
-              <ProductListItem key={`${product.source}-${index}`} product={product} index={index} isAuthenticated={isAuthenticated} />
+              <ProductListItem key={`${product.source}-${index}`} product={product} index={index} isAuthenticated={isAuthenticated} onClick={() => setSelectedProduct(product)} />
             ))}
           </motion.div>
         )}
@@ -237,17 +241,20 @@ export default function SearchResults({ data }: SearchResultsProps) {
           </p>
         </div>
       )}
+
+      {/* Product Detail Modal */}
+      <ProductModal
+        product={selectedProduct}
+        onClose={() => setSelectedProduct(null)}
+      />
     </section>
   );
 }
 
 // Product Card (Grid View)
-function ProductCard({ product, index, isAuthenticated }: { product: ProductResult; index: number; isAuthenticated: boolean }) {
+function ProductCard({ product, index, isAuthenticated, onClick }: { product: ProductResult; index: number; isAuthenticated: boolean; onClick: () => void }) {
   const [wishlisted, setWishlisted] = useState(() =>
     isAuthenticated && product.url ? isInWishlist(product.url) : false
-  );
-  const [alerted, setAlerted] = useState(() =>
-    isAuthenticated && product.url ? hasPriceAlert(product.url) : false
   );
 
   const handleWishlist = (e: React.MouseEvent) => {
@@ -264,19 +271,6 @@ function ProductCard({ product, index, isAuthenticated }: { product: ProductResu
     if (result) setWishlisted(true);
   };
 
-  const handleAlert = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    if (!isAuthenticated) return;
-    const result = addPriceAlert({
-      title: product.title,
-      price: product.price,
-      url: product.url,
-      source: product.source,
-      image: product.image,
-    });
-    if (result) setAlerted(true);
-  };
-
   const formatPrice = (price: string) => {
     if (!price) return "N/A";
     const num = parseFloat(price);
@@ -290,7 +284,8 @@ function ProductCard({ product, index, isAuthenticated }: { product: ProductResu
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: index * 0.03 }}
       whileHover={{ y: -5, scale: 1.02 }}
-      className="group overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm transition-all hover:shadow-xl dark:border-slate-800 dark:bg-slate-900"
+      onClick={onClick}
+      className="group cursor-pointer overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm transition-all hover:shadow-xl dark:border-slate-800 dark:bg-slate-900"
     >
       {/* Image */}
       <div className="relative h-48 overflow-hidden bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-800 dark:to-slate-900">
@@ -333,21 +328,6 @@ function ProductCard({ product, index, isAuthenticated }: { product: ProductResu
             }`}
           >
             <Heart size={16} className={wishlisted ? "fill-red-500" : ""} />
-          </button>
-        )}
-
-        {/* Price Alert button */}
-        {isAuthenticated && product.price && (
-          <button
-            onClick={handleAlert}
-            className={`absolute right-3 ${index === 0 ? "top-24" : "top-14"} rounded-full p-2 shadow transition hover:scale-110 ${
-              alerted
-                ? "bg-amber-50 text-amber-500 dark:bg-amber-950"
-                : "bg-white/90 text-slate-400 hover:text-amber-500 dark:bg-slate-800"
-            }`}
-            title={alerted ? "Alert set" : "Notify on price drop"}
-          >
-            <Bell size={16} className={alerted ? "fill-amber-500" : ""} />
           </button>
         )}
       </div>
@@ -393,12 +373,9 @@ function ProductCard({ product, index, isAuthenticated }: { product: ProductResu
 }
 
 // Product List Item (List View)
-function ProductListItem({ product, index, isAuthenticated }: { product: ProductResult; index: number; isAuthenticated: boolean }) {
+function ProductListItem({ product, index, isAuthenticated, onClick }: { product: ProductResult; index: number; isAuthenticated: boolean; onClick: () => void }) {
   const [wishlisted, setWishlisted] = useState(() =>
     isAuthenticated && product.url ? isInWishlist(product.url) : false
-  );
-  const [alerted, setAlerted] = useState(() =>
-    isAuthenticated && product.url ? hasPriceAlert(product.url) : false
   );
 
   const handleWishlist = () => {
@@ -414,18 +391,6 @@ function ProductListItem({ product, index, isAuthenticated }: { product: Product
     if (result) setWishlisted(true);
   };
 
-  const handleAlert = () => {
-    if (!isAuthenticated) return;
-    const result = addPriceAlert({
-      title: product.title,
-      price: product.price,
-      url: product.url,
-      source: product.source,
-      image: product.image,
-    });
-    if (result) setAlerted(true);
-  };
-
   const formatPrice = (price: string) => {
     if (!price) return "N/A";
     const num = parseFloat(price);
@@ -438,7 +403,8 @@ function ProductListItem({ product, index, isAuthenticated }: { product: Product
       initial={{ opacity: 0, x: -20 }}
       animate={{ opacity: 1, x: 0 }}
       transition={{ delay: index * 0.03 }}
-      className="flex items-center gap-5 rounded-2xl border border-slate-200 bg-white p-4 transition hover:shadow-lg dark:border-slate-800 dark:bg-slate-900"
+      onClick={onClick}
+      className="flex cursor-pointer items-center gap-5 rounded-2xl border border-slate-200 bg-white p-4 transition hover:shadow-lg dark:border-slate-800 dark:bg-slate-900"
     >
       {/* Image */}
       <div className="h-24 w-24 shrink-0 overflow-hidden rounded-xl bg-slate-100 dark:bg-slate-800">
@@ -489,21 +455,6 @@ function ProductListItem({ product, index, isAuthenticated }: { product: Product
           {formatPrice(product.price)}
         </span>
       </div>
-
-      {/* Price Alert */}
-      {isAuthenticated && product.price && (
-        <button
-          onClick={handleAlert}
-          className={`shrink-0 rounded-xl p-2.5 transition hover:scale-110 ${
-            alerted
-              ? "text-amber-500"
-              : "text-slate-400 hover:text-amber-500"
-          }`}
-          title={alerted ? "Alert set" : "Notify on price drop"}
-        >
-          <Bell size={20} className={alerted ? "fill-amber-500" : ""} />
-        </button>
-      )}
 
       {/* Wishlist */}
       {isAuthenticated && (

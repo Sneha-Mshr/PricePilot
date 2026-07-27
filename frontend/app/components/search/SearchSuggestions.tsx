@@ -42,9 +42,7 @@ export default function SearchSuggestions({
 
   // Get recent searches if logged in
   const recentSearches = getToken()
-    ? getSearchHistory()
-        .slice(0, 5)
-        .map((h) => h.query)
+    ? [...new Set(getSearchHistory().slice(0, 5).map((h) => h.query))]
     : [];
 
   // Filter suggestions based on query
@@ -78,9 +76,9 @@ export default function SearchSuggestions({
             Recent
           </p>
           <div className="space-y-1">
-            {filteredRecent.map((item) => (
+            {filteredRecent.map((item, i) => (
               <button
-                key={item}
+                key={`recent-${i}`}
                 onClick={() => onSelect(item)}
                 className="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-left text-sm text-slate-700 transition hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-800"
               >
