@@ -11,8 +11,11 @@ import {
   List,
   ArrowDownUp,
   Filter,
+  Heart,
 } from "lucide-react";
 import { SearchResponse, ProductResult } from "@/types/search";
+import { useAuth } from "@/context/AuthContext";
+import { addToWishlist, isInWishlist } from "@/services/wishlist.service";
 
 interface SearchResultsProps {
   data: SearchResponse;
@@ -37,6 +40,7 @@ export default function SearchResults({ data }: SearchResultsProps) {
   const [activeSource, setActiveSource] = useState<string>("All");
   const [viewMode, setViewMode] = useState<ViewMode>("grid");
   const [sortMode, setSortMode] = useState<SortMode>("price_asc");
+  const { isAuthenticated } = useAuth();
 
   const getFilteredProducts = (): ProductResult[] => {
     let products =
@@ -182,7 +186,7 @@ export default function SearchResults({ data }: SearchResultsProps) {
             className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
           >
             {filteredProducts.map((product, index) => (
-              <ProductCard key={`${product.source}-${index}`} product={product} index={index} />
+              <ProductCard key={`${product.source}-${index}`} product={product} index={index} isAuthenticated={isAuthenticated} />
             ))}
           </motion.div>
         ) : (
@@ -194,7 +198,7 @@ export default function SearchResults({ data }: SearchResultsProps) {
             className="space-y-4"
           >
             {filteredProducts.map((product, index) => (
-              <ProductListItem key={`${product.source}-${index}`} product={product} index={index} />
+              <ProductListItem key={`${product.source}-${index}`} product={product} index={index} isAuthenticated={isAuthenticated} />
             ))}
           </motion.div>
         )}
@@ -212,7 +216,25 @@ export default function SearchResults({ data }: SearchResultsProps) {
 }
 
 // Product Card (Grid View)
-function ProductCard({ product, index }: { product: ProductResult; index: number }) {
+function ProductCard({ product, index, isAuthenticated }: { product: ProductResult; index: number; isAuthenticated: boolean }) {
+  const [wishlisted, setWishlisted] = useState(() =>
+    isAuthenticated && product.url ? isInWishlist(product.url) : false
+  );
+
+  const handleWishlist = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (!isAuthenticated) return;
+    const result = addToWishlist({
+      title: product.title,
+      price: product.price,
+      url: product.url,
+      image: product.image,
+      source: product.source,
+      rating: product.rating,
+    });
+    if (result) setWishlisted(true);
+  };
+
   const formatPrice = (price: string) => {
     if (!price) return "N/A";
     const num = parseFloat(price);
@@ -257,6 +279,20 @@ function ProductCard({ product, index }: { product: ProductResult; index: number
             Best Price
           </span>
         )}
+
+        {/* Wishlist button */}
+        {isAuthenticated && (
+          <button
+            onClick={handleWishlist}
+            className={`absolute right-3 ${index === 0 ? "top-12" : "top-3"} rounded-full p-2 shadow transition hover:scale-110 ${
+              wishlisted
+                ? "bg-red-50 text-red-500 dark:bg-red-950"
+                : "bg-white/90 text-slate-400 hover:text-red-500 dark:bg-slate-800"
+            }`}
+          >
+            <Heart size={16} className={wishlisted ? "fill-red-500" : ""} />
+          </button>
+        )}
       </div>
 
       {/* Content */}
@@ -300,7 +336,24 @@ function ProductCard({ product, index }: { product: ProductResult; index: number
 }
 
 // Product List Item (List View)
-function ProductListItem({ product, index }: { product: ProductResult; index: number }) {
+function ProductListItem({ product, index, isAuthenticated }: { product: ProductResult; index: number; isAuthenticated: boolean }) {
+  const [wishlisted, setWishlisted] = useState(() =>
+    isAuthenticated && product.url ? isInWishlist(product.url) : false
+  );
+
+  const handleWishlist = () => {
+    if (!isAuthenticated) return;
+    const result = addToWishlist({
+      title: product.title,
+      price: product.price,
+      url: product.url,
+      image: product.image,
+      source: product.source,
+      rating: product.rating,
+    });
+    if (result) setWishlisted(true);
+  };
+
   const formatPrice = (price: string) => {
     if (!price) return "N/A";
     const num = parseFloat(price);
@@ -364,6 +417,20 @@ function ProductListItem({ product, index }: { product: ProductResult; index: nu
           {formatPrice(product.price)}
         </span>
       </div>
+
+      {/* Wishlist */}
+      {isAuthenticated && (
+        <button
+          onClick={handleWishlist}
+          className={`shrink-0 rounded-xl p-2.5 transition hover:scale-110 ${
+            wishlisted
+              ? "text-red-500"
+              : "text-slate-400 hover:text-red-500"
+          }`}
+        >
+          <Heart size={20} className={wishlisted ? "fill-red-500" : ""} />
+        </button>
+      )}
 
       {/* Action */}
       <a

@@ -13,17 +13,21 @@ import {
 } from "lucide-react";
 
 const categories = [
-  { name: "Phones", icon: Smartphone },
-  { name: "Laptops", icon: Laptop },
-  { name: "Fashion", icon: Shirt },
-  { name: "Watches", icon: Watch },
-  { name: "Audio", icon: Headphones },
-  { name: "Cameras", icon: Camera },
-  { name: "Gaming", icon: Gamepad2 },
-  { name: "Home", icon: Home },
+  { name: "Phones", icon: Smartphone, query: "smartphones" },
+  { name: "Laptops", icon: Laptop, query: "laptops" },
+  { name: "Fashion", icon: Shirt, query: "fashion clothing" },
+  { name: "Watches", icon: Watch, query: "watches" },
+  { name: "Audio", icon: Headphones, query: "headphones" },
+  { name: "Cameras", icon: Camera, query: "cameras" },
+  { name: "Gaming", icon: Gamepad2, query: "gaming accessories" },
+  { name: "Home", icon: Home, query: "home appliances" },
 ];
 
-export default function Categories() {
+interface CategoriesProps {
+  onCategoryClick?: (query: string) => void;
+}
+
+export default function Categories({ onCategoryClick }: CategoriesProps) {
   return (
     <section className="bg-slate-950 py-20">
       <div className="mx-auto max-w-7xl px-6">
@@ -55,6 +59,7 @@ export default function Categories() {
                   scale: 1.04,
                 }}
                 transition={{ duration: 0.2 }}
+                onClick={() => onCategoryClick?.(item.query)}
                 className="group cursor-pointer rounded-3xl border border-slate-800 bg-slate-900 p-8 shadow-lg hover:border-teal-500 hover:bg-slate-800"
               >
                 <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-r from-teal-500 to-cyan-500">

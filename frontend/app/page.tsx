@@ -4,19 +4,16 @@ import { useState } from "react";
 import Features from "@/app/components/home/Features";
 import Categories from "@/app/components/home/Categories";
 import { motion } from "framer-motion";
-import { ArrowRight, Sparkles, ShieldCheck, Zap } from "lucide-react";
+import { ArrowRight, Sparkles } from "lucide-react";
 
 import Navbar from "@/app/components/layout/Navbar";
-import ProductCard from "@/app/components/product/ProductCard";
 import Footer from "@/app/components/home/Footer";
 import SearchResults from "@/app/components/search/SearchResults";
 import SearchLoading from "@/app/components/search/SearchLoading";
 import SearchEmpty from "@/app/components/search/SearchEmpty";
-import useProducts from "@/hooks/useProducts";
 import useSearch from "@/hooks/useSearch";
 
 export default function Home() {
-  const { products, loading: productsLoading, error: productsError } = useProducts();
   const { results, loading: searchLoading, error: searchError, searched, search, clearResults } = useSearch();
 
   const [query, setQuery] = useState("");
@@ -30,6 +27,12 @@ export default function Home() {
   const handleClear = () => {
     setQuery("");
     clearResults();
+  };
+
+  const handleCategoryClick = (categoryQuery: string) => {
+    setQuery(categoryQuery);
+    search(categoryQuery);
+    window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   return (
@@ -117,48 +120,7 @@ export default function Home() {
               <p className="mt-4 text-sm font-medium text-red-500">{searchError}</p>
             )}
 
-            {/* Stores */}
 
-            <div className="mt-10 flex flex-wrap justify-center gap-4">
-
-              {[
-                "Amazon",
-                "Flipkart",
-                "Myntra",
-              ].map((store) => (
-                <div
-                  key={store}
-                  className="rounded-full border bg-white px-5 py-2 shadow dark:border-slate-700 dark:bg-slate-900"
-                >
-                  {store}
-                </div>
-              ))}
-
-            </div>
-
-            {/* Buttons (only show when no search) */}
-            {!searched && (
-              <div className="mt-10 flex flex-col gap-4 sm:flex-row">
-
-                <button
-                  onClick={() => document.querySelector("input")?.focus()}
-                  className="flex items-center gap-2 rounded-xl bg-teal-500 px-8 py-4 font-semibold text-white hover:bg-teal-600"
-                >
-
-                  Start Comparing
-
-                  <ArrowRight size={18} />
-
-                </button>
-
-                <button className="rounded-xl border px-8 py-4 font-semibold dark:border-slate-700 dark:text-white">
-
-                  Learn More
-
-                </button>
-
-              </div>
-            )}
 
           </div>
 
@@ -180,148 +142,9 @@ export default function Home() {
 
         {!searched && (
           <>
-            <Categories />
+            <Categories onCategoryClick={handleCategoryClick} />
 
             <Features />
-
-            {/* FEATURES */}
-
-            <section className="mx-auto grid max-w-7xl grid-cols-1 gap-8 px-6 py-20 md:grid-cols-3">
-
-              {[
-                {
-                  icon: <Zap />,
-                  title: "Lightning Fast",
-                  desc: "Compare prices in seconds."
-                },
-                {
-                  icon: <ShieldCheck />,
-                  title: "Trusted Results",
-                  desc: "Reliable AI-powered comparison."
-                },
-                {
-                  icon: <Sparkles />,
-                  title: "Smart AI Search",
-                  desc: "Find the best deals automatically."
-                },
-              ].map((item) => (
-
-                <div
-                  key={item.title}
-                  className="rounded-3xl bg-white p-8 shadow-lg transition hover:-translate-y-2 dark:bg-slate-900"
-                >
-
-                  <div className="mb-5 text-teal-500">
-
-                    {item.icon}
-
-                  </div>
-
-                  <h3 className="mb-3 text-2xl font-bold dark:text-white">
-
-                    {item.title}
-
-                  </h3>
-
-                  <p className="text-slate-500">
-
-                    {item.desc}
-
-                  </p>
-
-                </div>
-
-              ))}
-
-            </section>
-
-            {/* ---------------- TRENDING PRODUCTS ---------------- */}
-
-            <section className="bg-slate-950 py-24">
-
-              <div className="mx-auto max-w-7xl px-6">
-
-                <div className="mb-16 text-center">
-
-                  <span className="inline-flex items-center rounded-full bg-gradient-to-r from-teal-500 to-cyan-500 px-5 py-2 text-sm font-semibold text-white shadow-lg">
-
-                    Most Popular Deals
-
-                  </span>
-
-                  <h2 className="mt-6 text-5xl font-extrabold text-white">
-
-                    Trending Products
-
-                  </h2>
-
-                  <p className="mx-auto mt-5 max-w-3xl text-lg text-slate-400">
-
-                    Discover today&apos;s most popular products with AI-powered price
-                    comparison across Amazon, Flipkart, Myntra and more.
-
-                  </p>
-
-                </div>
-
-                {productsLoading && (
-
-                  <div className="py-16 text-center">
-
-                    <p className="text-lg text-slate-400">
-
-                      Loading Products...
-
-                    </p>
-
-                  </div>
-
-                )}
-
-                {productsError && (
-
-                  <div className="py-16 text-center">
-
-                    <p className="font-semibold text-red-500">
-
-                      {productsError}
-
-                    </p>
-
-                  </div>
-
-                )}
-
-                {!productsLoading && !productsError && (
-
-                  <div className="grid grid-cols-1 gap-8 md:grid-cols-2 xl:grid-cols-3">
-
-                    {products.map((product) => (
-
-                      <ProductCard
-                        key={product.id}
-                        product={product}
-                      />
-
-                    ))}
-
-                  </div>
-
-                )}
-
-                <div className="mt-16 flex justify-center">
-
-                  <button className="rounded-xl bg-gradient-to-r from-teal-500 to-cyan-500 px-10 py-4 text-lg font-semibold text-white shadow-xl transition duration-300 hover:scale-105">
-
-                    Explore More Products
-
-                  </button>
-
-                </div>
-
-              </div>
-
-            </section>
           </>
         )}
 

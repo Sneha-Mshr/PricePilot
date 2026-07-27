@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { Poppins } from "next/font/google";
 import ThemeProvider from "@/app/components/providers/ThemeProvider";
+import { AuthProvider } from "@/context/AuthContext";
+import ChatBot from "@/app/components/chat/ChatBot";
 import "./globals.css";
 
 const poppins = Poppins({
@@ -32,7 +34,12 @@ export default function RootLayout({
       <body
         className={`${poppins.className} bg-slate-50 text-slate-900 dark:bg-slate-950 dark:text-white transition-colors duration-300`}
       >
-        <ThemeProvider>{children}</ThemeProvider>
+        <ThemeProvider>
+          <AuthProvider>
+            {children}
+            <ChatBot />
+          </AuthProvider>
+        </ThemeProvider>
       </body>
     </html>
   );

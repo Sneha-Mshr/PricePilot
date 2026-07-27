@@ -2,10 +2,36 @@
 
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { Search, Sparkles } from "lucide-react";
+import { Search, Sparkles, LogOut, Heart, History, ChevronDown } from "lucide-react";
+import { useState, useRef, useEffect } from "react";
 import ThemeToggle from "@/app/components/common/ThemeToggle";
+import { useAuth } from "@/context/AuthContext";
 
 export default function Navbar() {
+  const { user, isAuthenticated, logout } = useAuth();
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  // Close dropdown on outside click
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setDropdownOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  const getInitials = (name: string) => {
+    return name
+      .split(" ")
+      .map((n) => n[0])
+      .join("")
+      .toUpperCase()
+      .slice(0, 2);
+  };
+
   return (
     <motion.header
       initial={{ y: -80 }}
@@ -42,24 +68,17 @@ export default function Navbar() {
           </Link>
 
           <Link
-            href="/products"
+            href="/wishlist"
             className="font-medium text-slate-600 transition hover:text-teal-600 dark:text-slate-300"
           >
-            Products
+            Wishlist
           </Link>
 
           <Link
-            href="/analytics"
+            href="/history"
             className="font-medium text-slate-600 transition hover:text-teal-600 dark:text-slate-300"
           >
-            Analytics
-          </Link>
-
-          <Link
-            href="/compare"
-            className="font-medium text-slate-600 transition hover:text-teal-600 dark:text-slate-300"
-          >
-            Compare
+            History
           </Link>
         </div>
 
@@ -68,15 +87,90 @@ export default function Navbar() {
 
           <ThemeToggle />
 
-          <button className="hidden items-center gap-2 rounded-xl border border-slate-200 px-5 py-2.5 text-sm font-semibold transition hover:border-teal-500 hover:text-teal-600 dark:border-slate-700 lg:flex">
-            Login
-          </button>
+          {isAuthenticated && user ? (
+            /* Logged in - Show user menu */
+            <div className="relative" ref={dropdownRef}>
+              <button
+                onClick={() => setDropdownOpen(!dropdownOpen)}
+                className="flex items-center gap-2 rounded-xl border border-slate-200 px-3 py-2 transition hover:border-teal-500 dark:border-slate-700"
+              >
+                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-r from-teal-500 to-cyan-500 text-xs font-bold text-white">
+                  {getInitials(user.name)}
+                </div>
+                <span className="hidden text-sm font-medium text-slate-700 dark:text-slate-300 lg:block">
+                  {user.name}
+                </span>
+                <ChevronDown size={14} className="text-slate-400" />
+              </button>
 
-          <button className="flex items-center gap-2 rounded-xl bg-gradient-to-r from-teal-500 to-cyan-500 px-5 py-2.5 text-sm font-semibold text-white shadow-lg shadow-cyan-500/30 transition hover:scale-105">
-            <Sparkles size={16} />
-            Get Started
-          </button>
+              {/* Dropdown */}
+              {dropdownOpen && (
+                <motion.div
+                  initial={{ opacity: 0, y: 8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="absolute right-0 top-full mt-2 w-56 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-xl dark:border-slate-700 dark:bg-slate-900"
+                >
+                  <div className="border-b border-slate-100 px-4 py-3 dark:border-slate-800">
+                    <p className="text-sm font-semibold text-slate-900 dark:text-white">
+                      {user.name}
+                    </p>
+                    <p className="text-xs text-slate-500">{user.email}</p>
+                  </div>
 
+                  <div className="py-1">
+                    <Link
+                      href="/wishlist"
+                      onClick={() => setDropdownOpen(false)}
+                      className="flex items-center gap-3 px-4 py-2.5 text-sm text-slate-700 transition hover:bg-slate-50 dark:text-slate-300 dark:hover:bg-slate-800"
+                    >
+                      <Heart size={16} className="text-rose-500" />
+                      My Wishlist
+                    </Link>
+
+                    <Link
+                      href="/history"
+                      onClick={() => setDropdownOpen(false)}
+                      className="flex items-center gap-3 px-4 py-2.5 text-sm text-slate-700 transition hover:bg-slate-50 dark:text-slate-300 dark:hover:bg-slate-800"
+                    >
+                      <History size={16} className="text-blue-500" />
+                      Search History
+                    </Link>
+                  </div>
+
+                  <div className="border-t border-slate-100 py-1 dark:border-slate-800">
+                    <button
+                      onClick={() => {
+                        logout();
+                        setDropdownOpen(false);
+                      }}
+                      className="flex w-full items-center gap-3 px-4 py-2.5 text-sm text-red-600 transition hover:bg-red-50 dark:hover:bg-red-950"
+                    >
+                      <LogOut size={16} />
+                      Sign Out
+                    </button>
+                  </div>
+                </motion.div>
+              )}
+            </div>
+          ) : (
+            /* Not logged in - Show login/signup buttons */
+            <>
+              <Link
+                href="/login"
+                className="hidden items-center gap-2 rounded-xl border border-slate-200 px-5 py-2.5 text-sm font-semibold transition hover:border-teal-500 hover:text-teal-600 dark:border-slate-700 dark:text-slate-300 lg:flex"
+              >
+                Login
+              </Link>
+
+              <Link
+                href="/signup"
+                className="flex items-center gap-2 rounded-xl bg-gradient-to-r from-teal-500 to-cyan-500 px-5 py-2.5 text-sm font-semibold text-white shadow-lg shadow-cyan-500/30 transition hover:scale-105"
+              >
+                <Sparkles size={16} />
+                Get Started
+              </Link>
+            </>
+          )}
         </div>
       </div>
     </motion.header>

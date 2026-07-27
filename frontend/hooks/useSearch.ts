@@ -3,6 +3,8 @@
 import { useState } from "react";
 import { SearchResponse } from "@/types/search";
 import { searchProducts } from "@/services/search.service";
+import { addToHistory } from "@/services/history.service";
+import { getToken } from "@/services/auth.service";
 
 export default function useSearch() {
   const [results, setResults] = useState<SearchResponse | null>(null);
@@ -23,6 +25,11 @@ export default function useSearch() {
 
       const data = await searchProducts(query.trim());
       setResults(data);
+
+      // Save to history if user is logged in
+      if (getToken()) {
+        addToHistory(query.trim(), data.total);
+      }
     } catch (err: any) {
       console.error("Search error:", err);
 
