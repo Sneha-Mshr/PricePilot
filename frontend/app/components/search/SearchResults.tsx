@@ -12,10 +12,14 @@ import {
   ArrowDownUp,
   Filter,
   Heart,
+  Share2,
+  Check,
+  Bell,
 } from "lucide-react";
 import { SearchResponse, ProductResult } from "@/types/search";
 import { useAuth } from "@/context/AuthContext";
 import { addToWishlist, isInWishlist } from "@/services/wishlist.service";
+import { addPriceAlert, hasPriceAlert } from "@/services/alerts.service";
 
 interface SearchResultsProps {
   data: SearchResponse;
@@ -74,6 +78,15 @@ export default function SearchResults({ data }: SearchResultsProps) {
     return num.toLocaleString("en-IN");
   };
 
+  const [copied, setCopied] = useState(false);
+
+  const handleShare = () => {
+    const shareUrl = `${window.location.origin}/?q=${encodeURIComponent(data.query)}`;
+    navigator.clipboard.writeText(shareUrl);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+
   return (
     <section className="mx-auto max-w-7xl px-6 py-12">
       {/* Header */}
@@ -81,9 +94,22 @@ export default function SearchResults({ data }: SearchResultsProps) {
         <h2 className="text-3xl font-extrabold text-slate-900 dark:text-white">
           Results for &quot;{data.query}&quot;
         </h2>
-        <p className="mt-2 text-slate-500 dark:text-slate-400">
-          Found {data.total} products across {data.sources.length} stores
-        </p>
+        <div className="mt-2 flex items-center justify-center gap-3">
+          <p className="text-slate-500 dark:text-slate-400">
+            Found {data.total} products across {data.sources.length} stores
+          </p>
+          <button
+            onClick={handleShare}
+            className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-medium transition ${
+              copied
+                ? "bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300"
+                : "bg-slate-100 text-slate-600 hover:bg-teal-100 hover:text-teal-700 dark:bg-slate-800 dark:text-slate-400"
+            }`}
+          >
+            {copied ? <Check size={12} /> : <Share2 size={12} />}
+            {copied ? "Copied!" : "Share"}
+          </button>
+        </div>
       </div>
 
       {/* Source Stats */}
@@ -220,6 +246,9 @@ function ProductCard({ product, index, isAuthenticated }: { product: ProductResu
   const [wishlisted, setWishlisted] = useState(() =>
     isAuthenticated && product.url ? isInWishlist(product.url) : false
   );
+  const [alerted, setAlerted] = useState(() =>
+    isAuthenticated && product.url ? hasPriceAlert(product.url) : false
+  );
 
   const handleWishlist = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -233,6 +262,19 @@ function ProductCard({ product, index, isAuthenticated }: { product: ProductResu
       rating: product.rating,
     });
     if (result) setWishlisted(true);
+  };
+
+  const handleAlert = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (!isAuthenticated) return;
+    const result = addPriceAlert({
+      title: product.title,
+      price: product.price,
+      url: product.url,
+      source: product.source,
+      image: product.image,
+    });
+    if (result) setAlerted(true);
   };
 
   const formatPrice = (price: string) => {
@@ -293,6 +335,21 @@ function ProductCard({ product, index, isAuthenticated }: { product: ProductResu
             <Heart size={16} className={wishlisted ? "fill-red-500" : ""} />
           </button>
         )}
+
+        {/* Price Alert button */}
+        {isAuthenticated && product.price && (
+          <button
+            onClick={handleAlert}
+            className={`absolute right-3 ${index === 0 ? "top-24" : "top-14"} rounded-full p-2 shadow transition hover:scale-110 ${
+              alerted
+                ? "bg-amber-50 text-amber-500 dark:bg-amber-950"
+                : "bg-white/90 text-slate-400 hover:text-amber-500 dark:bg-slate-800"
+            }`}
+            title={alerted ? "Alert set" : "Notify on price drop"}
+          >
+            <Bell size={16} className={alerted ? "fill-amber-500" : ""} />
+          </button>
+        )}
       </div>
 
       {/* Content */}
@@ -340,6 +397,9 @@ function ProductListItem({ product, index, isAuthenticated }: { product: Product
   const [wishlisted, setWishlisted] = useState(() =>
     isAuthenticated && product.url ? isInWishlist(product.url) : false
   );
+  const [alerted, setAlerted] = useState(() =>
+    isAuthenticated && product.url ? hasPriceAlert(product.url) : false
+  );
 
   const handleWishlist = () => {
     if (!isAuthenticated) return;
@@ -352,6 +412,18 @@ function ProductListItem({ product, index, isAuthenticated }: { product: Product
       rating: product.rating,
     });
     if (result) setWishlisted(true);
+  };
+
+  const handleAlert = () => {
+    if (!isAuthenticated) return;
+    const result = addPriceAlert({
+      title: product.title,
+      price: product.price,
+      url: product.url,
+      source: product.source,
+      image: product.image,
+    });
+    if (result) setAlerted(true);
   };
 
   const formatPrice = (price: string) => {
@@ -417,6 +489,21 @@ function ProductListItem({ product, index, isAuthenticated }: { product: Product
           {formatPrice(product.price)}
         </span>
       </div>
+
+      {/* Price Alert */}
+      {isAuthenticated && product.price && (
+        <button
+          onClick={handleAlert}
+          className={`shrink-0 rounded-xl p-2.5 transition hover:scale-110 ${
+            alerted
+              ? "text-amber-500"
+              : "text-slate-400 hover:text-amber-500"
+          }`}
+          title={alerted ? "Alert set" : "Notify on price drop"}
+        >
+          <Bell size={20} className={alerted ? "fill-amber-500" : ""} />
+        </button>
+      )}
 
       {/* Wishlist */}
       {isAuthenticated && (

@@ -29,19 +29,19 @@ interface CategoriesProps {
 
 export default function Categories({ onCategoryClick }: CategoriesProps) {
   return (
-    <section className="bg-slate-950 py-20">
+    <section className="bg-slate-100 py-20 dark:bg-slate-950">
       <div className="mx-auto max-w-7xl px-6">
 
         <div className="text-center">
-          <p className="text-teal-400 font-semibold uppercase tracking-widest">
+          <p className="text-teal-500 font-semibold uppercase tracking-widest dark:text-teal-400">
             Explore
           </p>
 
-          <h2 className="mt-4 text-5xl font-bold text-white">
+          <h2 className="mt-4 text-5xl font-bold text-slate-900 dark:text-white">
             Shop By Category
           </h2>
 
-          <p className="mt-4 text-slate-400 text-lg">
+          <p className="mt-4 text-slate-600 text-lg dark:text-slate-400">
             Compare prices across your favourite shopping categories.
           </p>
         </div>
@@ -60,17 +60,17 @@ export default function Categories({ onCategoryClick }: CategoriesProps) {
                 }}
                 transition={{ duration: 0.2 }}
                 onClick={() => onCategoryClick?.(item.query)}
-                className="group cursor-pointer rounded-3xl border border-slate-800 bg-slate-900 p-8 shadow-lg hover:border-teal-500 hover:bg-slate-800"
+                className="group cursor-pointer rounded-3xl border border-slate-200 bg-white p-8 shadow-lg hover:border-teal-500 hover:bg-slate-50 dark:border-slate-800 dark:bg-slate-900 dark:hover:bg-slate-800"
               >
                 <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-r from-teal-500 to-cyan-500">
                   <Icon className="h-8 w-8 text-white" />
                 </div>
 
-                <h3 className="mt-6 text-2xl font-semibold text-white">
+                <h3 className="mt-6 text-2xl font-semibold text-slate-900 dark:text-white">
                   {item.name}
                 </h3>
 
-                <p className="mt-2 text-slate-400">
+                <p className="mt-2 text-slate-500 dark:text-slate-400">
                   Discover the best prices with AI-powered comparison.
                 </p>
               </motion.div>
