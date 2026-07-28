@@ -24,9 +24,15 @@ class AmazonScraper(BaseScraper):
             count = min(len(cards), 8)
 
             for card in cards[:count]:
-                # Title
-                title_el = card.select_one("h2")
-                title = title_el.get_text(strip=True) if title_el else ""
+                # Title - prefer img alt (has full product name), fallback to h2
+                title = ""
+                img_el = card.select_one("img.s-image")
+                if img_el:
+                    title = img_el.get("alt", "")
+
+                if not title:
+                    title_el = card.select_one("h2")
+                    title = title_el.get_text(strip=True) if title_el else ""
 
                 if not title:
                     continue
