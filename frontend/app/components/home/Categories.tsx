@@ -13,14 +13,14 @@ import {
 } from "lucide-react";
 
 const categories = [
-  { name: "Phones", icon: Smartphone, query: "smartphones" },
-  { name: "Laptops", icon: Laptop, query: "laptops" },
-  { name: "Fashion", icon: Shirt, query: "fashion clothing" },
-  { name: "Watches", icon: Watch, query: "watches" },
+  { name: "Phones", icon: Smartphone, query: "iPhone Samsung phone" },
+  { name: "Laptops", icon: Laptop, query: "laptop" },
+  { name: "Fashion", icon: Shirt, query: "men clothing" },
+  { name: "Watches", icon: Watch, query: "smart watch" },
   { name: "Audio", icon: Headphones, query: "headphones" },
-  { name: "Cameras", icon: Camera, query: "cameras" },
-  { name: "Gaming", icon: Gamepad2, query: "gaming accessories" },
-  { name: "Home", icon: Home, query: "home appliances" },
+  { name: "Cameras", icon: Camera, query: "camera" },
+  { name: "Gaming", icon: Gamepad2, query: "gaming laptop" },
+  { name: "Home", icon: Home, query: "air fryer" },
 ];
 
 interface CategoriesProps {

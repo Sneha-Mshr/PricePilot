@@ -57,15 +57,26 @@ class SearchAgent:
         is_electronics = any(kw in query_lower for kw in ELECTRONICS_KEYWORDS)
         is_fashion = any(kw in query_lower for kw in FASHION_KEYWORDS)
 
-        if is_electronics and not is_fashion:
-            # Electronics → Amazon + Flipkart only
+        if is_electronics:
+            # Electronics → Amazon + Flipkart only (takes priority over fashion)
             return ["Amazon", "Flipkart"]
-        elif is_fashion and not is_electronics:
+        elif is_fashion:
             # Fashion → all three (Myntra shines here)
             return ["Amazon", "Flipkart", "Myntra"]
         else:
             # Ambiguous or general → all three
             return ["Amazon", "Flipkart", "Myntra"]
+
+    # Category synonyms — if query is a category term, accept related product titles
+    CATEGORY_SYNONYMS = {
+        "phone": ["iphone", "galaxy", "oneplus", "redmi", "realme", "vivo", "oppo", "pixel", "smartphone", "mobile"],
+        "laptop": ["macbook", "notebook", "vivobook", "ideapad", "thinkpad", "pavilion", "inspiron", "zenbook", "chromebook", "victus", "legion", "rog"],
+        "headphones": ["earbuds", "earphone", "airpods", "buds", "headset", "wh-1000", "wf-1000"],
+        "camera": ["dslr", "mirrorless", "canon", "nikon", "sony alpha", "gopro", "fujifilm"],
+        "watch": ["smartwatch", "watch", "apple watch", "galaxy watch", "fitbit", "fire-boltt", "noise"],
+        "gaming": ["ps5", "playstation", "xbox", "nintendo", "rog", "gaming", "victus", "legion", "nitro"],
+        "tv": ["television", "smart tv", "oled", "qled", "monitor"],
+    }
 
     def _is_relevant(self, product_title: str, query: str) -> bool:
         """Check if a product is relevant to the search query."""
@@ -78,15 +89,20 @@ class SearchAgent:
         if not query_words:
             return True
 
-        # At least one query word should appear in the title
+        # Direct match: at least one query word appears in the title
         matches = sum(1 for word in query_words if word in title_lower)
+        if matches >= 1:
+            return True
 
-        # For single-word queries, need exact match
-        if len(query_words) == 1:
-            return matches >= 1
+        # Category synonym match: if query is a category term,
+        # check if title contains any synonym
+        for word in query_words:
+            synonyms = self.CATEGORY_SYNONYMS.get(word, [])
+            if synonyms:
+                if any(syn in title_lower for syn in synonyms):
+                    return True
 
-        # For multi-word queries, need at least half the words to match
-        return matches >= max(1, len(query_words) // 2)
+        return False
 
     def _scrape_source(self, source_name: str, query: str):
         """Scrape a single source. Returns (source_name, products, error)."""

@@ -122,15 +122,22 @@ export default function SearchResults({ data }: SearchResultsProps) {
           <div
             key={source.source}
             className={`rounded-xl border px-5 py-3 ${
-              SOURCE_BG[source.source] || "bg-slate-50 border-slate-200"
+              source.error
+                ? "border-red-200 bg-red-50 dark:border-red-800 dark:bg-red-950"
+                : SOURCE_BG[source.source] || "bg-slate-50 border-slate-200"
             }`}
           >
-            <span className="font-bold">{source.source}</span>
-            <span className="ml-2 text-sm opacity-80">
-              {source.count} products
+            <span className={`font-bold ${source.error ? "text-red-600 dark:text-red-400" : ""}`}>
+              {source.source}
             </span>
-            {source.error && (
-              <span className="ml-2 text-xs text-red-500">(error)</span>
+            {source.error ? (
+              <span className="ml-2 text-sm text-red-500 dark:text-red-400">
+                temporarily unavailable
+              </span>
+            ) : (
+              <span className="ml-2 text-sm opacity-80">
+                {source.count} products
+              </span>
             )}
           </div>
         ))}
