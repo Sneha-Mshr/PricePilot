@@ -4,9 +4,10 @@ import { SearchX } from "lucide-react";
 
 interface SearchEmptyProps {
   query: string;
+  notice?: string | null;
 }
 
-export default function SearchEmpty({ query }: SearchEmptyProps) {
+export default function SearchEmpty({ query, notice }: SearchEmptyProps) {
   return (
     <section className="mx-auto max-w-7xl px-6 py-20">
       <div className="flex flex-col items-center text-center">
@@ -17,8 +18,14 @@ export default function SearchEmpty({ query }: SearchEmptyProps) {
           No results found
         </h3>
         <p className="max-w-md text-slate-500 dark:text-slate-400">
-          We couldn&apos;t find any products matching &quot;{query}&quot; across
-          our supported stores. Try a different search term.
+          {notice ? (
+            notice
+          ) : (
+            <>
+              We couldn&apos;t find any products matching &quot;{query}&quot;
+              across our supported stores. Try a different search term.
+            </>
+          )}
         </p>
       </div>
     </section>

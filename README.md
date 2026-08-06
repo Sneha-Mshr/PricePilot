@@ -3,9 +3,9 @@
 <div align="center">
 
 ## 🧠 AI Product Price Comparison Platform
-### Built with Next.js • FastAPI • Spring Boot • Hybrid RAG
+### Built with Next.js • FastAPI • Spring Boot • Gemini
 
-PricePilot is an AI-powered product price comparison platform designed to simplify online shopping by aggregating products from multiple e-commerce websites into a single intelligent search experience. The platform is being developed around a **Hybrid Retrieval-Augmented Generation (Hybrid RAG)** architecture to deliver smarter product discovery, semantic search, and AI-powered shopping assistance.
+PricePilot aggregates products from multiple Indian e-commerce sites into a single search. One query fans out to Amazon, Flipkart and Myntra concurrently, results are filtered for relevance and merged into a single price comparison, and a Gemini-powered assistant helps you decide what to buy.
 
 ![Next.js](https://img.shields.io/badge/Next.js-16-black?logo=next.js)
 ![FastAPI](https://img.shields.io/badge/FastAPI-009688?logo=fastapi)
@@ -28,7 +28,7 @@ The project follows a **microservice-based architecture**, where:
 - ⚡ **FastAPI** handles AI search and scraping.
 - 🗄 **PostgreSQL** stores product data.
 - 🍃 **MongoDB** manages user authentication.
-- 🧠 **Hybrid RAG** is being integrated for semantic search and intelligent product recommendations.
+- 🧠 **Google Gemini** powers the shopping assistant chatbot.
 
 The long-term vision is to build an AI shopping assistant capable of understanding user intent, comparing products intelligently, and recommending the best purchasing options.
 
@@ -37,16 +37,16 @@ The long-term vision is to build an AI shopping assistant capable of understandi
 # ✨ Features
 
 ### 🤖 AI Search
-- AI-powered product search
-- Intelligent search pipeline
-- Amazon product scraping
-- FastAPI AI service
+- One query → Amazon, Flipkart & Myntra scraped concurrently
+- Category routing (electronics skip Myntra, fashion includes it)
+- Relevance filtering with category synonyms
+- Gemini shopping assistant with rule-based fallback
 
 ### 💰 Product Comparison
-- Product search
-- Price comparison
-- Product listing
-- Multi-store architecture
+- Unified results sorted by price, with a best-deal banner
+- Filter by store, sort by price or rating, grid/list views
+- Wishlist, search history, price-drop alerts & shareable links
+- 15-minute result cache with stale-fallback when stores rate-limit
 
 ### 🔐 Authentication
 - User Registration
@@ -72,17 +72,17 @@ The long-term vision is to build an AI shopping assistant capable of understandi
               Next.js Frontend
                       │
                       ▼
-             Spring Boot Backend
-                      │
-         ┌────────────┴────────────┐
-         ▼                         ▼
-     MongoDB                 FastAPI AI
-                                   │
-                            AI Search Agent
-                                   │
-                             Playwright
-                                   │
-                                Amazon
+        ┌────────────┴────────────┐
+        ▼                          ▼
+ Spring Boot (auth)         FastAPI (search + AI)
+        │                          │
+        ▼                ┌────────┼────────┐
+    MongoDB              ▼        ▼        ▼
+                     PostgreSQL  Gemini  Search Agent
+                                              │
+                                    ┌────────┼────────┐
+                                    ▼        ▼        ▼
+                                 Amazon   Flipkart   Myntra
 ```
 
 ---
@@ -104,41 +104,51 @@ The long-term vision is to build an AI shopping assistant capable of understandi
 - PostgreSQL
 - MongoDB
 
-## AI Stack
-- AI Search Agent
-- Playwright
-- Hybrid RAG *(In Progress)*
-- LangChain *(Planned)*
-- Qdrant *(Planned)*
+## Scraping & AI
+- Search Agent (concurrent multi-store scraping + relevance filtering)
+- Requests + BeautifulSoup / lxml
+- Google Gemini (shopping chatbot)
+- In-memory TTL cache with stale-fallback
+- Hybrid RAG + Qdrant *(planned)*
 
 ---
 
 # 🚀 Current Progress
 
 ### ✅ Backend
-- PostgreSQL Integration
-- Product CRUD APIs
-- Product Search APIs
-- Amazon Scraper
-- AI Search Endpoint
+- PostgreSQL integration + product CRUD APIs
+- Amazon, Flipkart & Myntra scrapers
+- Concurrent AI search endpoint with relevance filtering
+- Gemini chatbot endpoint
+- Result caching, health checks, env-driven config
 
 ### ✅ Authentication
-- Spring Boot Backend
-- MongoDB Integration
-- User Registration
-- User Login
-- JWT Authentication
+- Spring Boot + MongoDB
+- Registration, login, JWT issuing
+- BCrypt hashing, DTO responses (no password leakage)
+- Proper HTTP status codes via a global exception handler
 
 ### ✅ Frontend
-- Next.js Setup
-- Responsive UI
-- Theme Toggle
-- Product Listing
-- Backend Integration
+- Responsive UI with dark/light theme
+- Search, comparison, product modal, best-deal banner
+- Wishlist, history, insights, price-drop alerts
+- Product catalogue backed by the CRUD API
 
 ---
 
-# ⚙️ Installation
+# ⚙️ Local Setup
+
+## Prerequisites
+
+| Tool | Version | Needed for |
+|------|---------|-----------|
+| Node.js | 20+ | Frontend |
+| Python | 3.11–3.12 | FastAPI service |
+| Java (JDK) | 21+ | Spring Boot service |
+| PostgreSQL | 14+ | Product storage |
+| MongoDB | 6+ | User accounts |
+
+Don't want to install the databases? Use Docker instead — see [Option B](#option-b-docker).
 
 ## Clone Repository
 
@@ -147,28 +157,120 @@ git clone https://github.com/Sneha-Mshr/PricePilot.git
 cd PricePilot
 ```
 
-## Frontend
+## Option A — Run each service yourself
 
-```bash
-cd frontend
-npm install
-npm run dev
-```
-
-## FastAPI Backend
+### 1. FastAPI Backend (AI search, chatbot, product CRUD) → port 8000
 
 ```bash
 cd backend
+python -m venv venv
+venv\Scripts\activate          # macOS/Linux: source venv/bin/activate
 pip install -r requirements.txt
+
+cp .env.example .env           # then edit DATABASE_URL and GEMINI_API_KEY
 uvicorn app.main:app --reload
 ```
 
-## Spring Boot Backend
+Create the database first if it doesn't exist:
+
+```sql
+CREATE DATABASE pricepilot;
+```
+
+> **Password with special characters?** Percent-encode them in `DATABASE_URL`
+> (`#` → `%23`, `@` → `%40`), otherwise the connection string won't parse.
+
+A `GEMINI_API_KEY` is optional — without it the chatbot falls back to canned
+rule-based replies. Get a free key at
+[aistudio.google.com/apikey](https://aistudio.google.com/apikey).
+
+### 2. Spring Boot Backend (auth) → port 8080
 
 ```bash
 cd spring-backend/backend
 ./mvnw spring-boot:run
 ```
+
+Reads `MONGODB_URI`, `JWT_SECRET`, `CORS_ORIGINS` and `FASTAPI_URL` from the
+environment, all with working localhost defaults.
+
+### 3. Frontend → port 3000
+
+```bash
+cd frontend
+npm install
+cp .env.example .env
+npm run dev
+```
+
+## Option B — Docker
+
+Brings up Postgres, MongoDB and both backends in one command:
+
+```bash
+docker compose up --build
+```
+
+Then run the frontend on the host with `cd frontend && npm run dev`.
+
+## Verify it's working
+
+```bash
+curl http://localhost:8000/api/v1/health     # {"status":"healthy"}
+curl http://localhost:8080/api/v1/health     # PricePilot Spring Boot Running...
+```
+
+Interactive API docs: <http://localhost:8000/docs>
+
+---
+
+# ☁️ Deployment
+
+The three services deploy independently:
+
+| Service | Platform | Config |
+|---------|----------|--------|
+| Frontend | Vercel | Root directory `frontend` |
+| FastAPI | Render | `backend/Dockerfile` |
+| Spring Boot | Render | `spring-backend/backend/Dockerfile` |
+| PostgreSQL | Render | Free managed instance |
+| MongoDB | MongoDB Atlas | Free M0 cluster |
+
+[`render.yaml`](render.yaml) is a Render Blueprint that provisions both backends
+and the database in one go.
+
+### Environment variables
+
+**FastAPI**
+
+| Variable | Example |
+|----------|---------|
+| `DATABASE_URL` | `postgresql://user:pass@host:5432/pricepilot` |
+| `CORS_ORIGINS` | `https://pricepilot.vercel.app` |
+| `GEMINI_API_KEY` | your Google AI Studio key |
+
+**Spring Boot**
+
+| Variable | Example |
+|----------|---------|
+| `MONGODB_URI` | `mongodb+srv://user:pass@cluster.mongodb.net/pricepilot` |
+| `JWT_SECRET` | 32+ random bytes — never reuse the dev default |
+| `CORS_ORIGINS` | `https://pricepilot.vercel.app` |
+| `FASTAPI_URL` | `https://pricepilot-api.onrender.com` |
+
+**Frontend** (must be set *before* the Vercel build — `NEXT_PUBLIC_*` values are
+baked in at build time)
+
+| Variable | Example |
+|----------|---------|
+| `NEXT_PUBLIC_AI_API_URL` | `https://pricepilot-api.onrender.com` |
+| `NEXT_PUBLIC_AUTH_API_URL` | `https://pricepilot-auth.onrender.com` |
+
+> **A note on live scraping.** Amazon, Flipkart and Myntra block datacenter IPs
+> far more aggressively than home connections, so searches that work locally can
+> come back empty from a cloud host. The API caches results for 15 minutes and
+> falls back to the last known-good data when a scrape is blocked, but for
+> consistently fresh results you'd want a proxy service in front of the scrapers.
 
 ---
 
@@ -186,7 +288,7 @@ cd spring-backend/backend
 - 🔄 AI Product Recommendations
 - 🔄 Price History
 - 🔄 Email Alerts
-- 🔄 Cloud Deployment
+- ✅ Dockerised Deployment
 
 ---
 

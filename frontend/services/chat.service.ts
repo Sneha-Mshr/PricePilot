@@ -1,7 +1,9 @@
 import axios from "axios";
+import { SEARCH_API_URL } from "@/lib/config";
 
 const chatApi = axios.create({
-  baseURL: "http://127.0.0.1:8000/api/v2",
+  baseURL: SEARCH_API_URL,
+  timeout: 60000,
 });
 
 export interface ChatMessage {

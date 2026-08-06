@@ -5,8 +5,6 @@ import {
   ExternalLink,
   IndianRupee,
   ShoppingBag,
-  Heart,
-  Star,
 } from "lucide-react";
 
 import { useRouter } from "next/navigation";
@@ -58,33 +56,6 @@ export default function ProductCard({ product }: ProductCardProps) {
 
           </span>
 
-          {/* Wishlist */}
-
-          <button className="absolute right-4 top-4 rounded-full bg-white/90 p-2 shadow-lg backdrop-blur transition hover:scale-110 dark:bg-slate-800">
-
-            <Heart
-              size={18}
-              className="text-slate-500 transition hover:text-red-500"
-            />
-
-          </button>
-
-          {/* Trending */}
-
-          <span className="absolute bottom-4 left-4 rounded-full bg-orange-500 px-3 py-1 text-xs font-bold text-white shadow">
-
-            🔥 Trending
-
-          </span>
-
-          {/* Discount */}
-
-          <span className="absolute bottom-4 right-4 rounded-full bg-green-500 px-3 py-1 text-xs font-bold text-white shadow">
-
-            15% OFF
-
-          </span>
-
         </div>
 
         <CardContent className="space-y-5 p-6">
@@ -104,29 +75,6 @@ export default function ProductCard({ product }: ProductCardProps) {
             {product.title}
 
           </h2>
-
-          {/* Rating */}
-
-          <div className="flex items-center gap-1">
-
-            <Star
-              className="fill-yellow-400 text-yellow-400"
-              size={16}
-            />
-
-            <span className="font-semibold">
-
-              4.8
-
-            </span>
-
-            <span className="text-sm text-slate-500">
-
-              (1.2k Reviews)
-
-            </span>
-
-          </div>
 
           {/* Price */}
 

@@ -61,38 +61,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const login = async (data: LoginRequest) => {
-    const token = await loginUser(data);
+    const { token, user: loggedInUser } = await loginUser(data);
+
     saveToken(token);
-
-    // Extract user info from token
-    const decoded = decodeToken(token);
-    const loggedInUser: User = {
-      id: "",
-      name: decoded?.email.split("@")[0] || "",
-      email: decoded?.email || data.email,
-    };
-
     saveUser(loggedInUser);
     setUser(loggedInUser);
   };
 
   const register = async (data: RegisterRequest) => {
-    const registeredUser = await registerUser(data);
-
-    // Auto-login after registration
-    const token = await loginUser({
-      email: data.email,
-      password: data.password,
-    });
+    // Register already returns a token, so there is no second login round-trip.
+    const { token, user: newUser } = await registerUser(data);
 
     saveToken(token);
-
-    const newUser: User = {
-      id: registeredUser.id || "",
-      name: registeredUser.name || data.name,
-      email: registeredUser.email || data.email,
-    };
-
     saveUser(newUser);
     setUser(newUser);
   };

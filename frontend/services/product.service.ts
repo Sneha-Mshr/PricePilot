@@ -1,25 +1,12 @@
 import api from "@/lib/api";
 
 export const getProducts = async (query?: string) => {
-  try {
-    console.log("Calling API...");
+  // The API filters on `search`, not `query`.
+  const response = await api.get("/products", {
+    params: query ? { search: query, limit: 50 } : { limit: 50 },
+  });
 
-    const response = await api.get("/products", {
-      params: query ? { query } : {},
-    });
-
-    console.log("Status:", response.status);
-    console.log("Data:", response.data);
-
-    return response.data;
-  } catch (error: any) {
-    console.log("Full Error:", error);
-    console.log("Error Message:", error.message);
-    console.log("Error Code:", error.code);
-    console.log("Error Config:", error.config);
-
-    throw error;
-  }
+  return response.data;
 };
 export const getProductById = async (id: string) => {
   try {

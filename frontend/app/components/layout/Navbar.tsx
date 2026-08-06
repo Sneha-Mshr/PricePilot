@@ -81,6 +81,13 @@ export default function Navbar() {
           >
             History
           </Link>
+
+          <Link
+            href="/analytics"
+            className="font-medium text-slate-600 transition hover:text-teal-600 dark:text-slate-300"
+          >
+            Insights
+          </Link>
         </div>
 
         {/* Right Side */}
@@ -214,6 +221,13 @@ export default function Navbar() {
                 className="block rounded-xl px-4 py-3 font-medium text-slate-700 transition hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-800"
               >
                 History
+              </Link>
+              <Link
+                href="/analytics"
+                onClick={() => setMobileMenuOpen(false)}
+                className="block rounded-xl px-4 py-3 font-medium text-slate-700 transition hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-800"
+              >
+                Insights
               </Link>
 
               {!isAuthenticated && (

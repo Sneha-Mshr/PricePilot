@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import Features from "@/app/components/home/Features";
 import Categories from "@/app/components/home/Categories";
@@ -18,7 +18,7 @@ import useSearch from "@/hooks/useSearch";
 import { checkPriceDrops, PriceDropMatch } from "@/services/alerts.service";
 import { getToken } from "@/services/auth.service";
 
-export default function Home() {
+function HomeContent() {
   const { results, loading: searchLoading, error: searchError, searched, search, clearResults } = useSearch();
   const searchParams = useSearchParams();
 
@@ -195,7 +195,7 @@ export default function Home() {
         )}
 
         {searched && !searchLoading && results && results.total === 0 && (
-          <SearchEmpty query={results.query} />
+          <SearchEmpty query={results.query} notice={results.notice} />
         )}
 
         {/* ---------------- BELOW: DEFAULT CONTENT (hidden during search) ---------------- */}
@@ -212,5 +212,22 @@ export default function Home() {
 
       </main>
     </>
+  );
+}
+
+// useSearchParams opts this tree into client-side rendering, so it needs a
+// Suspense boundary for the route to prerender.
+export default function Home() {
+  return (
+    <Suspense
+      fallback={
+        <>
+          <Navbar />
+          <main className="min-h-screen bg-slate-50 dark:bg-slate-950" />
+        </>
+      }
+    >
+      <HomeContent />
+    </Suspense>
   );
 }

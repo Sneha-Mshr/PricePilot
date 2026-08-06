@@ -1,5 +1,6 @@
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
+from app.ai.cache import search_cache
 from app.ai.scraper.amazon import AmazonScraper
 from app.ai.scraper.flipkart import FlipkartScraper
 from app.ai.scraper.myntra import MyntraScraper
@@ -115,6 +116,40 @@ class SearchAgent:
             return source_name, [], str(e)
 
     def search(self, query: str):
+        """Serve from cache when fresh, otherwise scrape, filter and merge."""
+
+        cache_key = query.lower().strip()
+
+        cached = search_cache.get(cache_key)
+        if cached:
+            print(f"[SearchAgent] Cache hit for: {query}")
+            return cached.model_copy(update={"cached": True})
+
+        result = self._live_search(query)
+
+        if result.total > 0:
+            search_cache.set(cache_key, result)
+            return result
+
+        # Every store came back empty — almost always because they blocked us
+        # (very common from a datacenter IP). Last known-good beats nothing.
+        stale = search_cache.get_stale(cache_key)
+        if stale and stale.total > 0:
+            print(f"[SearchAgent] Live scrape empty, serving stale cache for: {query}")
+            return stale.model_copy(update={
+                "cached": True,
+                "stale": True,
+                "notice": "Stores are rate-limiting us right now — showing the most recent prices we captured.",
+            })
+
+        return result.model_copy(update={
+            "notice": (
+                "No results — the stores blocked this request or have nothing "
+                "matching. Try a different search term in a moment."
+            ),
+        })
+
+    def _live_search(self, query: str):
         """Run relevant scrapers concurrently, filter results, and merge."""
 
         print(f"[SearchAgent] Starting search for: {query}")

@@ -1,18 +1,21 @@
 import axios from "axios";
-import { LoginRequest, RegisterRequest, User } from "@/types/auth";
+import { AuthResponse, LoginRequest, RegisterRequest, User } from "@/types/auth";
+import { AUTH_API_URL } from "@/lib/config";
 
 const authApi = axios.create({
-  baseURL: "http://127.0.0.1:8080/api/v1/auth",
+  baseURL: AUTH_API_URL,
+  timeout: 30000,
 });
 
-export const loginUser = async (data: LoginRequest): Promise<string> => {
-  // Spring Boot returns JWT token as plain string
-  const response = await authApi.post<string>("/login", data);
+export const loginUser = async (data: LoginRequest): Promise<AuthResponse> => {
+  const response = await authApi.post<AuthResponse>("/login", data);
   return response.data;
 };
 
-export const registerUser = async (data: RegisterRequest): Promise<User> => {
-  const response = await authApi.post<User>("/register", data);
+export const registerUser = async (
+  data: RegisterRequest
+): Promise<AuthResponse> => {
+  const response = await authApi.post<AuthResponse>("/register", data);
   return response.data;
 };
 

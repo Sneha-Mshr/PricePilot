@@ -1,10 +1,16 @@
 package com.pricepilot.backend.service;
 
 import java.util.Optional;
-import com.pricepilot.backend.security.JwtUtil;
 
+import com.pricepilot.backend.dto.AuthResponse;
+import com.pricepilot.backend.dto.LoginRequest;
+import com.pricepilot.backend.dto.RegisterRequest;
+import com.pricepilot.backend.dto.UserResponse;
+import com.pricepilot.backend.exception.ApiException;
 import com.pricepilot.backend.model.User;
 import com.pricepilot.backend.repository.UserRepository;
+import com.pricepilot.backend.security.JwtUtil;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -13,40 +19,75 @@ public class UserService {
 
     private final UserRepository repository;
     private final PasswordEncoder passwordEncoder;
+    private final JwtUtil jwtUtil;
 
     public UserService(UserRepository repository,
-                       PasswordEncoder passwordEncoder) {
+                       PasswordEncoder passwordEncoder,
+                       JwtUtil jwtUtil) {
         this.repository = repository;
         this.passwordEncoder = passwordEncoder;
+        this.jwtUtil = jwtUtil;
     }
 
-    public User register(User user) {
+    public AuthResponse register(RegisterRequest request) {
 
-        if (repository.existsByEmail(user.getEmail())) {
-            throw new RuntimeException("Email already exists");
+        String name = trimmed(request.name());
+        String email = normalisedEmail(request.email());
+        String password = request.password();
+
+        if (name.isEmpty() || email.isEmpty() || password == null || password.isEmpty()) {
+            throw new ApiException(HttpStatus.BAD_REQUEST, "Name, email and password are required");
         }
 
-        user.setPassword(
-                passwordEncoder.encode(user.getPassword())
+        if (password.length() < 6) {
+            throw new ApiException(HttpStatus.BAD_REQUEST, "Password must be at least 6 characters");
+        }
+
+        if (repository.existsByEmail(email)) {
+            throw new ApiException(HttpStatus.CONFLICT, "An account with this email already exists");
+        }
+
+        User saved = repository.save(
+                new User(name, email, passwordEncoder.encode(password))
         );
 
-        return repository.save(user);
+        return new AuthResponse(
+                jwtUtil.generateToken(saved.getEmail()),
+                UserResponse.from(saved)
+        );
     }
 
-    public String login(String email, String password) {
+    public AuthResponse login(LoginRequest request) {
 
-    Optional<User> optionalUser = repository.findByEmail(email);
+        String email = normalisedEmail(request.email());
+        String password = request.password();
 
-        if (optionalUser.isEmpty()) {
-            throw new RuntimeException("User not found");
+        if (email.isEmpty() || password == null || password.isEmpty()) {
+            throw new ApiException(HttpStatus.BAD_REQUEST, "Email and password are required");
+        }
+
+        Optional<User> optionalUser = repository.findByEmail(email);
+
+        // Same message for an unknown email and a wrong password, so the
+        // endpoint can't be used to discover which emails are registered.
+        if (optionalUser.isEmpty()
+                || !passwordEncoder.matches(password, optionalUser.get().getPassword())) {
+            throw new ApiException(HttpStatus.UNAUTHORIZED, "Invalid email or password");
         }
 
         User user = optionalUser.get();
 
-        if (!passwordEncoder.matches(password, user.getPassword())) {
-            throw new RuntimeException("Invalid password");
-        }
+        return new AuthResponse(
+                jwtUtil.generateToken(user.getEmail()),
+                UserResponse.from(user)
+        );
+    }
 
-    return JwtUtil.generateToken(user.getEmail());
+    private String trimmed(String value) {
+        return value == null ? "" : value.trim();
+    }
+
+    private String normalisedEmail(String email) {
+        return trimmed(email).toLowerCase();
     }
 }

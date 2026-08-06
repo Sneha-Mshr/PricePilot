@@ -14,6 +14,7 @@ import {
   Heart,
   Share2,
   Check,
+  Info,
 } from "lucide-react";
 import { SearchResponse, ProductResult } from "@/types/search";
 import { useAuth } from "@/context/AuthContext";
@@ -90,6 +91,14 @@ export default function SearchResults({ data }: SearchResultsProps) {
 
   return (
     <section className="mx-auto max-w-7xl px-6 py-12">
+      {/* Backend notice, e.g. stores rate-limiting us and results being stale */}
+      {data.notice && (
+        <div className="mb-6 flex items-start gap-3 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800 dark:border-amber-800 dark:bg-amber-950 dark:text-amber-200">
+          <Info size={18} className="mt-0.5 shrink-0" />
+          <span>{data.notice}</span>
+        </div>
+      )}
+
       {/* Best Deal Banner */}
       <BestDealBanner data={data} />
 

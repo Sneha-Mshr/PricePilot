@@ -1,5 +1,6 @@
 package com.pricepilot.backend.service;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -11,10 +12,10 @@ public class FastApiService {
 
     private final WebClient client;
 
-    public FastApiService() {
+    public FastApiService(@Value("${app.fastapi.url}") String fastApiUrl) {
 
         client = WebClient.builder()
-                .baseUrl("http://localhost:8000")
+                .baseUrl(fastApiUrl)
                 .build();
 
     }

@@ -15,15 +15,10 @@ export default function useProducts() {
 
       const data = await getProducts(query);
 
-      console.log("API Response:", data);
-
       setProducts(data);
       setError("");
     } catch (err: any) {
-      console.error("API Error:", err);
-      console.error("Response:", err.response);
-      console.error("Response Data:", err.response?.data);
-
+      console.error("Failed to load products:", err);
       setError("Failed to load products");
     } finally {
       setLoading(false);

@@ -1,0 +1,54 @@
+# Render Blueprint for PricePilot's two backend services.
+#
+# The frontend is deployed separately on Vercel (see README).
+#
+# After the first deploy, set the cross-service URLs that can't be known
+# up front:
+#   pricepilot-api        -> CORS_ORIGINS = https://<your-vercel-app>.vercel.app
+#   pricepilot-auth       -> CORS_ORIGINS = https://<your-vercel-app>.vercel.app
+#   pricepilot-auth       -> FASTAPI_URL  = https://pricepilot-api.onrender.com
+
+services:
+  # ---------- FastAPI: AI search, chatbot, product CRUD ----------
+  - type: web
+    name: pricepilot-api
+    runtime: docker
+    dockerfilePath: ./backend/Dockerfile
+    dockerContext: ./backend
+    plan: free
+    region: singapore
+    healthCheckPath: /api/v1/health
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: pricepilot-db
+          property: connectionString
+      - key: CORS_ORIGINS
+        sync: false
+      - key: GEMINI_API_KEY
+        sync: false
+
+  # ---------- Spring Boot: registration, login, JWT ----------
+  - type: web
+    name: pricepilot-auth
+    runtime: docker
+    dockerfilePath: ./spring-backend/backend/Dockerfile
+    dockerContext: ./spring-backend/backend
+    plan: free
+    region: singapore
+    healthCheckPath: /api/v1/health
+    envVars:
+      # MongoDB Atlas connection string — Render has no managed MongoDB.
+      - key: MONGODB_URI
+        sync: false
+      - key: JWT_SECRET
+        generateValue: true
+      - key: CORS_ORIGINS
+        sync: false
+      - key: FASTAPI_URL
+        sync: false
+
+databases:
+  - name: pricepilot-db
+    plan: free
+    region: singapore

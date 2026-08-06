@@ -1,13 +1,14 @@
-import os
-
 from sqlalchemy import create_engine
 from sqlalchemy.orm import declarative_base, sessionmaker
 
-DATABASE_URL = os.getenv("DATABASE_URL", "postgresql://postgres:password@localhost:5432/pricepilot")
+from app.core.config import settings
 
 engine = create_engine(
-    DATABASE_URL,
-    echo=True
+    settings.database_url,
+    echo=False,
+    # Managed Postgres closes idle connections; recycle before that happens.
+    pool_pre_ping=True,
+    pool_recycle=300,
 )
 
 SessionLocal = sessionmaker(

@@ -4,7 +4,8 @@ import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { Product } from "@/types/product";
 import { getProductById } from "@/services/product.service";
-import { ArrowLeft, ExternalLink, Heart } from "lucide-react";
+import { ArrowLeft, ExternalLink } from "lucide-react";
+import Navbar from "@/app/components/layout/Navbar";
 
 export default function ProductDetailsPage() {
   const { id } = useParams();
@@ -45,6 +46,8 @@ export default function ProductDetailsPage() {
   }
 
   return (
+    <>
+    <Navbar />
     <main className="min-h-screen bg-slate-50 p-8 dark:bg-slate-950">
       <div className="mx-auto max-w-7xl">
 
@@ -96,13 +99,9 @@ export default function ProductDetailsPage() {
                 rel="noopener noreferrer"
                 className="flex items-center gap-2 rounded-xl bg-teal-500 px-8 py-4 font-semibold text-white"
               >
-                Compare Price
+                View on {product.source}
                 <ExternalLink size={18} />
               </a>
-
-              <button className="rounded-xl border px-8 py-4">
-                <Heart />
-              </button>
 
             </div>
 
@@ -111,5 +110,6 @@ export default function ProductDetailsPage() {
         </div>
       </div>
     </main>
+    </>
   );
 }

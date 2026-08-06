@@ -20,4 +20,10 @@ export interface SearchResponse {
   total: number;
   sources: SourceResult[];
   products: ProductResult[];
+  /** Results were served from the backend cache rather than a live scrape. */
+  cached?: boolean;
+  /** Cached results are past their TTL — the live scrape came back empty. */
+  stale?: boolean;
+  /** Message to surface to the user, e.g. stores rate-limiting us. */
+  notice?: string | null;
 }
