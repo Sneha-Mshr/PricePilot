@@ -13,7 +13,23 @@ PricePilot aggregates products from multiple Indian e-commerce sites into a sing
 ![MongoDB](https://img.shields.io/badge/MongoDB-47A248?logo=mongodb)
 ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-4169E1?logo=postgresql)
 
+### 🔗 [**Try the live demo →**](https://pricepilot-five.vercel.app)
+
 </div>
+
+> **Note:** the backends run on Render's free tier and sleep after 15 minutes of
+> inactivity. The first search may take up to a minute while they wake up —
+> after that, results come back in 3–4 seconds.
+
+---
+
+# 🌐 Live Deployment
+
+| Service | Platform | URL |
+|---------|----------|-----|
+| Frontend | Vercel | <https://pricepilot-five.vercel.app> |
+| AI search & chat API | Render | <https://pricepilot-api-9i9n.onrender.com/docs> |
+| Auth API | Render | <https://pricepilot-auth.onrender.com/api/v1/health> |
 
 ---
 
